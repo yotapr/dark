@@ -208,7 +208,7 @@ export const AddContactItem = (payload) => async (dispatch) => {
         'Content-Type': 'application/ld+json',
       }
     })
-    dispatch(addContact(payload.id,payload.companyName,payload.address,payload.image,payload.taxCode,payload.vatNumber,payload.phoneNumber,payload.email,payload.contactName,payload.contactPhone,payload.contactEmail,payload.clientCode,payload.startDate,payload.dossier,payload.creditLimit,payload.sdiCode,payload.invoiceCode,payload.website,payload.note,value['@id']));
+    dispatch(addContact(payload.id,payload.companyName,payload.address,payload.image,payload.taxCode,payload.vatNumber,payload.phoneNumber,payload.email,payload.contactName,payload.contactPhone,payload.contactEmail,payload.clientCode,payload.startDate,payload.dossier,payload.creditLimit,payload.sdiCode,payload.invoiceCode,payload.website,payload.note,value.data['@id']));
   } catch (err) {
     throw new Error(err);
   }

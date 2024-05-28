@@ -39,34 +39,56 @@ export const OfferSlice = createSlice({
         //state.salesAgents = action.payload
       },
       prepare: (
-        price,
-        materialCost,
-        mechanicalDesignCost,
-        electricalDesignCost,
-        electricalWiringOnBoardTheMachine,
-        panelWiringCost,
-        mechanicalAssembly,
-        preparationCost,
-        revenuePercentage,
         name,
         client,
         salesAgent,
+        customTotalCost,
+        productElements,
+        materialTotalCost,
+        mechanicalDesignCost,
+        mechanicalDesignTimeCost,
+        mechanicalDesignTime,
+        electricalDesignTimeCost,
+        electricalDesignTime,
+        electricalDesignCost,
+        electricalWiringOnBoardTheMachine,
+        panelWiringCost,
+        mechanicalAssemblyCost,
+        mechanicalAssemblyTimeCost,
+        mechanicalAssemblyTime,
+        productsKit,
+        rechargePercentage,
+        calculatedPrice,
+        price,
+        preparationCost,
+        revenuePercentage,
         id
       ) => {
         return {
           payload: {
-            price,
-            materialCost,
+            name,
+            client,
+            salesAgent,
+            customTotalCost,
+            productElements,
+            materialTotalCost,
             mechanicalDesignCost,
+            mechanicalDesignTimeCost,
+            mechanicalDesignTime,
+            electricalDesignTimeCost,
+            electricalDesignTime,
             electricalDesignCost,
             electricalWiringOnBoardTheMachine,
             panelWiringCost,
-            mechanicalAssembly,
+            mechanicalAssemblyCost,
+            mechanicalAssemblyTimeCost,
+            mechanicalAssemblyTime,
+            productsKit,
+            rechargePercentage,
+            calculatedPrice,
+            price,
             preparationCost,
             revenuePercentage,
-            name,        
-            client,
-            salesAgent,
             id
           },
         };
@@ -78,34 +100,56 @@ export const OfferSlice = createSlice({
         state.offers.push(action.payload);
       },
       prepare: (
-        price,
-        materialCost,
-        mechanicalDesignCost,
-        electricalDesignCost,
-        electricalWiringOnBoardTheMachine,
-        panelWiringCost,
-        mechanicalAssembly,
-        preparationCost,
-        revenuePercentage,
         name,
         client,
         salesAgent,
+        customTotalCost,
+        productElements,
+        materialTotalCost,
+        mechanicalDesignCost,
+        mechanicalDesignTimeCost,
+        mechanicalDesignTime,
+        electricalDesignTimeCost,
+        electricalDesignTime,
+        electricalDesignCost,
+        electricalWiringOnBoardTheMachine,
+        panelWiringCost,
+        mechanicalAssemblyCost,
+        mechanicalAssemblyTimeCost,
+        mechanicalAssemblyTime,
+        productsKit,
+        rechargePercentage,
+        calculatedPrice,
+        price,
+        preparationCost,
+        revenuePercentage,
         remoteId
       ) => {
         return {
           payload: {
-            price,
-            materialCost,
+            name,
+            client,
+            salesAgent,
+            customTotalCost,
+            productElements,
+            materialTotalCost,
             mechanicalDesignCost,
+            mechanicalDesignTimeCost,
+            mechanicalDesignTime,
+            electricalDesignTimeCost,
+            electricalDesignTime,
             electricalDesignCost,
             electricalWiringOnBoardTheMachine,
             panelWiringCost,
-            mechanicalAssembly,
+            mechanicalAssemblyCost,
+            mechanicalAssemblyTimeCost,
+            mechanicalAssemblyTime,
+            productsKit,
+            rechargePercentage,
+            calculatedPrice,
+            price,
             preparationCost,
             revenuePercentage,
-            name,        
-            client,
-            salesAgent,
             remoteId
           },
         };
@@ -148,7 +192,7 @@ export const UpdateOffer = (payload) => async (dispatch) => {
       }
     })
     //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
-    dispatch(SetOffer(payload.price,payload.materialCost,payload.mechanicalDesignCost,payload.electricalDesignCost,payload.electricalWiringOnBoardTheMachine,payload.panelWiringCost,payload.mechanicalAssembly,payload.preparationCost,payload.revenuePercentage,payload.name,payload.client,payload.salesAgent,payload.id,payload.remoteId));
+    //dispatch(SetOffer(payload.price,payload.materialCost,payload.mechanicalDesignCost,payload.electricalDesignCost,payload.electricalWiringOnBoardTheMachine,payload.panelWiringCost,payload.mechanicalAssembly,payload.preparationCost,payload.revenuePercentage,payload.name,payload.client,payload.salesAgent,payload.id,payload.remoteId));
   } catch (err) {
     throw new Error(err);
   }
@@ -161,9 +205,32 @@ export const AddOffersItem = (payload) => async (dispatch) => {
         'Content-Type': 'application/ld+json',
       }
     })
-    console.log(value.data['@id'])
     //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
-    dispatch(addOffer(payload.price,payload.materialCost,payload.mechanicalDesignCost,payload.electricalDesignCost,payload.electricalWiringOnBoardTheMachine,payload.panelWiringCost,payload.mechanicalAssembly,payload.preparationCost,payload.revenuePercentage,payload.name,payload.client,payload.salesAgent,value.data['@id']));
+    /*dispatch(addOffer(
+        payload.name,
+        payload.client,
+        payload.salesAgent,
+        payload.customTotalCost,
+        payload.productElements,
+        payload.materialTotalCost,
+        payload.mechanicalDesignCost,
+        payload.mechanicalDesignTimeCost,
+        payload.mechanicalDesignTime,
+        payload.electricalDesignTimeCost,
+        payload.electricalDesignTime,
+        payload.electricalDesignCost,
+        payload.electricalWiringOnBoardTheMachine,
+        payload.panelWiringCost,
+        payload.mechanicalAssemblyCost,
+        payload.mechanicalAssemblyTimeCost,
+        payload.mechanicalAssemblyTime,
+        payload.productsKit,
+        payload.rechargePercentage,
+        payload.calculatedPrice,
+        payload.price,
+        payload.preparationCost,
+        payload.revenuePercentage,
+        value.data['@id']));*/
   } catch (err) {
     throw new Error(err);
   }

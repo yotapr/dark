@@ -10,6 +10,7 @@ import TicketReducer from './apps/ticket/TicketSlice';
 import CategoryReducer from './apps/category/CategorySlice';
 import ProvidersReducer from './apps/providers/ProviderSlice';
 import ProductsReducer from './apps/products/ProductSlice';
+import ProductsKitsReducer from './apps/productKit/ProductKitSlice';
 import SalesAgentsReducer from './apps/salesAgents/SalesAgentsSlice';
 import AppointmentReducer from './apps/appointments/AppointmentSlice';
 
@@ -28,6 +29,7 @@ export const store = configureStore({
     categoryReducer: CategoryReducer,
     salesAgentsReducer: SalesAgentsReducer,
     appointmentReducer: AppointmentReducer,
+    productsKitsReducer: ProductsKitsReducer,
   },
 });
 

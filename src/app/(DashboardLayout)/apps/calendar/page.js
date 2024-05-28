@@ -214,7 +214,7 @@ const CalendarApp = () => {
             </ModalHeader>
             <Form onSubmit={update ? updateEvent : submitHandler}>
               <ModalBody>
-                <h6>Titolo dell'evento</h6>
+                <h6>Titolo dell&#39;evento</h6>
                 <Input
                   id="title"
                   placeholder="Inserisci titolo"
@@ -241,8 +241,8 @@ const CalendarApp = () => {
                   type="select"
                   onChange={inputUserHandler}
                 >
-                <option value="">Scegli l'utente...</option>
-                {users.map((singleUser) => { if (singleUser['@id'] === user) return (<option selected value={singleUser['@id']}>{singleUser.email}</option>); else return (<option value={singleUser['@id']}>{singleUser.email}</option>)})}
+                <option value="">Scegli l&#39;utente...</option>
+                {users.map((singleUser) => { if (singleUser['@id'] === user) return (<option key={singleUser['@id']} selected value={singleUser['@id']}>{singleUser.email}</option>); else return (<option key={singleUser['@id']} value={singleUser['@id']}>{singleUser.email}</option>)})}
                 </Input>
                 <br />
                 <h6>Select Event Color</h6>
@@ -291,7 +291,7 @@ const CalendarApp = () => {
             onChange={inputCalendarHandler}
           >
             <option value="">Scegli il calendario...</option>
-            {calendars.map((singleCalendar) => { if (singleCalendar['@id'] === calendar) return (<option selected value={singleCalendar['@id']}>{singleCalendar.name}</option>); else return (<option value={singleCalendar['@id']}>{singleCalendar.name}</option>)})}
+            {calendars.map((singleCalendar) => { if (singleCalendar['@id'] === calendar) return (<option key={singleCalendar['@id']} selected value={singleCalendar['@id']}>{singleCalendar.name}</option>); else return (<option key={singleCalendar['@id']} value={singleCalendar['@id']}>{singleCalendar.name}</option>)})}
           </Input>
           <br />
           <Calendar

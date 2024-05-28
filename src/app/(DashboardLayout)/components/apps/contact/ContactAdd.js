@@ -32,6 +32,34 @@ const ContactAdd = ({ click }) => {
     email: ""
   });
 
+  const [otherContacts, setOtherContacts] = React.useState([]);
+  
+  const handleAddElementContact = () => {
+    setOtherContacts([...otherContacts, {
+      contactsName: '',
+      contactsPhone: '',
+      contactsEmail: ''
+    }]);
+  };
+
+  const removeElementContact = async (index) => {
+    const newElements = [...otherContacts];
+    newElements.splice(index, 1);
+    setOtherContacts(newElements);
+  };
+
+  const handleChangeContacts = async (event, index) => {
+    const newElements = [...otherContacts];
+    if (event.target.name === 'contactsName') {
+      newElements[index].contactsName = event.target.value;
+    } else if (event.target.name === 'contactsPhone') {
+      newElements[index].contactsPhone = event.target.value;
+    } else {
+      newElements[index].contactsEmail = event.target.value;
+    }
+    setOtherContacts(newElements);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     dispatch(
@@ -54,7 +82,8 @@ const ContactAdd = ({ click }) => {
         invoiceCode: values.invoiceCode,
         website: values.website,
         note: values.note,
-        commercialNote: values.note
+        commercialNote: values.note,
+        otherContact: otherContacts
       })
     );
   };
@@ -240,6 +269,60 @@ const ContactAdd = ({ click }) => {
               />
             </FormGroup>
           </Col>
+        </Row>
+        <>
+        { otherContacts.map((singleOtherContact, index) => 
+          <>
+          <Row>  
+          <Col md={6}>
+            <FormGroup>
+            <Label for="contactsName">Nome contatto</Label>
+              <Input
+                type="text"
+                name="contactsName"
+                id="contactsName"
+                value={singleOtherContact.contactsName}
+                onChange={(event) => handleChangeContacts(event, index)}
+              />
+              <br/>
+              </FormGroup>
+          </Col>
+          <Col md={6}>
+            <FormGroup>
+            <Label for="contactsEmail">Email contatto</Label>
+              <Input
+                type="text"
+                name="contactsEmail"
+                id="contactsEmail"
+                value={singleOtherContact.contactsEmail}
+                onChange={(event) => handleChangeContacts(event, index)}
+              />
+              <br/>
+            </FormGroup>
+          </Col>
+          </Row>
+          <Row>
+          <Col md={6}>
+            <FormGroup>
+            <Label for="contactsPhone">Telefono contatto</Label>
+              <Input
+                type="text"
+                name="contactsPhone"
+                id="contactsPhone"
+                value={singleOtherContact.contactsPhone}
+                onChange={(event) => handleChangeContacts(event, index)}
+              />
+              <br/>
+            </FormGroup>
+          </Col>
+            <Col md={6}>
+              <Button color="danger" type="button" onClick={() => removeElementContact(index)}>Rimuovi elemento</Button>
+            </Col>  
+          </Row>
+          </>)}
+        <Button color="primary" type="button" onClick={handleAddElementContact}>Aggiungi elemento</Button>
+        </>
+        <Row>  
           <Col md={6}>
             <FormGroup>
               <Label for="clientCode">Codice cliente</Label>

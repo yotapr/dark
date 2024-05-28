@@ -101,6 +101,7 @@ const ContactList = () => {
     }
   };*/
   const contacts = useSelector((state) => state.contactsReducer.contacts)
+  console.log(contacts)
   /*const contacts = useSelector((state) =>
     getVisibleContacts(
       state.contactsReducer.contacts,
@@ -154,7 +155,7 @@ const ContactList = () => {
       </NavItem>
       {contacts.map((contact,index) => (
         <ContactListItem
-          key={contact.id}
+          key={index}
           active={active}
           {...contact}
           onContactClick={() => dispatch(SelectContact(index))}

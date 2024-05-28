@@ -25,6 +25,13 @@ import {
   AddProductsItem
 } from "@/store/apps/products/ProductSlice";
 import {
+  SelectProductKit,
+  fetchProductsKits,
+  deleteProductsKitItem,
+  UpdateProductsKit,
+  AddProductsKitItem
+} from "@/store/apps/productKit/ProductKitSlice";
+import {
   SelectContact,
   fetchContacts,
   DeleteContact,
@@ -37,21 +44,30 @@ import {
 
 const CustomReactTable = () => {
   const [modal, setModal] = useState(false);
+  const [modalKit, setModalKit] = useState(false);
   const [obj, setObj] = useState({});
+  const [productElements, setProductElements] = useState([]);
 
   const toggle = () => {
     setModal(!modal);
+  };
+
+  const toggleKit = () => {
+    setModalKit(!modalKit);
   };
   
   const dispatch = useDispatch();
   
   useEffect(() => {
     dispatch(fetchProducts(1));
+    dispatch(fetchProductsKits(1));
     dispatch(fetchContacts());
     dispatch(fetchCategories());
   }, [dispatch]);
   
   const products = useSelector((state) => state.productsReducer.products);
+
+  const productsKits = useSelector((state) => state.productsKitsReducer.productsKits);
   
   const provider = useSelector((state) => state.providersReducer.contacts);
 
@@ -60,6 +76,36 @@ const CustomReactTable = () => {
   const totalPage = useSelector((state) => state.productsReducer.totalPage);
 
   const [modalDelete, setModalDelete] = useState(false);
+
+  const [modalDeleteKit, setModalDeleteKit] = useState(false);
+
+  const handleAddElementProduct = () => {
+    setProductElements([...productElements, {
+      selectProduct: '',
+      elementsQuantity: 0,
+    }]);
+  };
+
+  const removeElementProduct = (index) => {
+    const newElements = [...productElements];
+    newElements.splice(index, 1);
+    setProductElements(newElements);
+  };
+
+  const handleChangeProducts = (event, index) => {
+    const newElements = [...productElements];
+    if (event.target.name === 'selectProduct') {
+      newElements[index].selectProduct = event.target.value;
+    } else {
+      newElements[index].elementsQuantity = parseInt(event.target.value);
+    }
+    setProductElements(newElements);
+  };
+  
+  const handleSubmitKit = (event) => {
+    event.preventDefault()
+    dispatch(AddProductsKitItem({"name": event.target.name.value, "products": productElements}))
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault()
@@ -107,6 +153,52 @@ const CustomReactTable = () => {
     }
     setModal(!modal);
   };
+  const dataKits = productsKits.map((prop, key) => {
+    let productString = ""
+    productString = productString  + prop.products.map((singleProduct) => products.find(productToFind => singleProduct.selectProduct === productToFind['@id']) && products.find(productToFind => singleProduct.selectProduct === productToFind['@id']).name + " (" + singleProduct.elementsQuantity + ") ")
+    return {
+      id: key,
+      name: prop.name,
+      products: productString,
+      productsArray: prop.products,
+      remoteId: prop.remoteId ? prop.remoteId : prop['@id'],
+      actions: (
+        // we've added some custom button actions
+        <div className="text-center">
+          {/* use this button to add a edit kind of action */}
+          <Button
+            onClick={() => {
+              const sobj = dataKits.find((o) => o.id === key);
+              setProductElements(sobj.productsArray);
+              setModalKit(!modalKit);
+              setObj(sobj);
+            }}
+            color="primary"
+            size="sm"
+            round="true"
+            icon="true"
+          >
+            MODIFICA
+          </Button>
+          <Button
+							onClick={() => {
+                const sobj = dataKits.find((o) => o.id === key);
+                setModalDeleteKit(!modalDeleteKit);
+                setObj(sobj);
+							}}
+							className="ml-1"
+							color="danger"
+							size="sm"
+							round="true"
+							icon="true"
+            >
+							CANCELLA
+						</Button>
+          {/* use this button to remove the data row */}
+        </div>
+      ),
+    };
+  })
   const data2 = products.map((prop, key) => {
     return {
       id: key,
@@ -199,6 +291,20 @@ const CustomReactTable = () => {
             color="secondary"
             className="ml-1"
             onClick={() => setModalDelete(!modalDelete)}
+          >
+            Annulla
+          </Button>
+        </ModalBody>
+      </Modal>
+      <Modal isOpen={modalDeleteKit} toggle={() => setModalDeleteKit(!modalDeleteKit)}>
+        <ModalHeader toggle={() => setModalDelete(!modalDelete)}>Confermi di voler cancellare?</ModalHeader>
+        <ModalBody>
+          <Button style={{margin: "5px"}} color="danger" onClick={() => {console.log(obj.remoteId); dispatch(deleteProductsKitItem(obj.remoteId,obj.id)); setModalDeleteKit(!modalDeleteKit)}}>       Rimuovi
+          </Button>
+          <Button
+            color="secondary"
+            className="ml-1"
+            onClick={() => setModalDeleteKit(!modalDeleteKit)}
           >
             Annulla
           </Button>
@@ -388,6 +494,104 @@ const CustomReactTable = () => {
           </Form>
         </ModalBody>
       </Modal>
+      <Modal isOpen={modalKit} toggle={toggleKit.bind(null)}>
+        <ModalHeader toggle={toggleKit.bind(null)}>Nuovo kit</ModalHeader>
+        <ModalBody>
+          <Form onSubmit={(event) => handleSubmitKit(event)}>
+            {obj !== null && <Input type="hidden" name="id" id="id" defaultValue={obj.id} />}
+            {obj !== null && <Input type="hidden" name="remoteId" id="remoteId" defaultValue={obj.remoteId} />}
+            <FormGroup>
+              <Label for="name">Nome</Label>
+              <Input
+                type="text"
+                name="name"
+                id="name"
+                defaultValue={obj !== null ? obj.name : ""}
+              />
+            </FormGroup>
+            {productElements.map((element, index) => (
+            <FormGroup key={index}>
+              <Label for="product">Prodotto</Label>
+              <Input
+                id="selectProduct"
+                name="selectProduct"
+                type="select"
+                onChange={(event) => handleChangeProducts(event, index)}
+              >
+                <option>Scegli un prodotto...</option>
+                {products.map((singleProduct => element.selectProduct === singleProduct['@id'] ? <option selected key={singleProduct['@id']} value={singleProduct['@id']}>{singleProduct.name}</option> : <option key={singleProduct['@id']} value={singleProduct['@id']}>{singleProduct.name}</option>))}
+              </Input>
+              <br/>
+              <Label for="quantity">Quantità</Label>
+              <Input
+                type="number"
+                name="elementsQuantity"
+                id="elementsQuantity"
+                value={element.elementsQuantity}
+                onChange={(event) => handleChangeProducts(event, index)}
+              />
+              <br/>
+              <Button color="danger" type="button" onClick={removeElementProduct}>Rimuovi elemento</Button>
+            </FormGroup>))}
+            <Button color="primary" type="button" onClick={handleAddElementProduct}>Aggiungi elemento</Button>
+            <br/>
+            <br/>
+            <FormGroup>
+              <Button color="primary" type="submit">
+                Salva
+              </Button>
+              <Button
+                color="secondary"
+                className="ml-1"
+                onClick={toggleKit.bind(null)}
+              >
+                Cancella
+              </Button>
+            </FormGroup>
+          </Form>
+        </ModalBody>
+      </Modal>
+      {/*--------------------------------------------------------------------------------*/}
+      {/* Start Action table*/}
+      {/*--------------------------------------------------------------------------------*/}
+      <div className="p-3 border-bottom">
+        <Button color="danger" block onClick={() => { setObj(null); toggleKit() }}>
+          Aggiungi kit
+        </Button>
+      </div>
+      <ComponentCard title="Action Table">
+        <ReactTable
+          columns={[
+            {
+              Header: "Nome",
+              accessor: "name",
+            },
+            {
+              Header: "Elementi",
+              accessor: "products",
+            },
+            {
+              Header: "Actions",
+              accessor: "actions",
+              sortable: false,
+              filterable: false,
+            },
+          ]}
+          pages={totalPage}
+          showPaginationBottom
+          showPageSizeOptions={false}
+          manual
+          showPageJump= {true}
+          className="-striped -highlight"
+          data={dataKits}
+          onPageChange={async (pageIndex) => {
+            await dispatch(fetchOrders(pageIndex + 1));
+          }}
+        />
+      </ComponentCard>
+      {/*--------------------------------------------------------------------------------*/}
+      {/* End Action table*/}
+      {/*--------------------------------------------------------------------------------*/}
       {/*--------------------------------------------------------------------------------*/}
       {/* Start Action table*/}
       {/*--------------------------------------------------------------------------------*/}
