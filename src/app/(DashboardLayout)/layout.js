@@ -56,7 +56,7 @@ export default function RootLayout({ children }) {
             {LayoutHorizontal ? <HorizontalHeader /> : <Header />}
             {LayoutHorizontal ? <HorizontalSidebar /> : ""}
             {/********Middle Content**********/}
-            <Container className="p-4">
+            <Container className="p-3 m-3" style={{maxWidth: "100%"}}>
               <div
                 className={
                   isFixedSidebar && LayoutHorizontal ? "HsidebarFixed" : ""

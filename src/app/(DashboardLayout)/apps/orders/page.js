@@ -24,7 +24,8 @@ import {
   UpdateOrder,
   addOrder,
   AddOrdersItem,
-  deleteOrderItem
+  deleteOrderItem,
+  deliveredOrder
 } from "@/store/apps/orders/OrderSlice";
 import {
   SelectContact,
@@ -33,13 +34,36 @@ import {
   toggleStarredContact,
 } from "@/store/apps/providers/ProviderSlice";
 import axios from "axios";
+import {
+  SelectProduct,
+  fetchProducts,
+  deleteProductItem,
+  UpdateProduct,
+  AddProductsItem
+} from "@/store/apps/products/ProductSlice";
+import {
+  SelectProductKit,
+  fetchProductsKits,
+  deleteProductsKitItem,
+  UpdateProductsKit,
+  AddProductsKitItem
+} from "@/store/apps/productKit/ProductKitSlice";
+import Select from 'react-select'
 
 const CustomReactTable = () => {
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
+  const [modalDelivery, setModalDelivery] = useState(false);
   const [obj, setObj] = useState({});
   const [jsonData, setJsonData] = useState(useSelector((state) => state.ordersReducer.orders));
   const [page, setPage] = useState(1);
+  const [productElements, setProductElements] = useState([]);
+  const [totalProduct, setTotalProduct] = useState(0);
+  const [productsKitValue,setProductsKitValue] = useState(null);
+  const products = useSelector((state) => state.productsReducer.products);
+  const productsKits = useSelector((state) => state.productsKitsReducer.productsKits);
+  const [materialTotalCost, setMaterialTotalCost] = useState(0);
+  const [totalCost, setTotalCost] = useState(0);
   
   const toggle = () => {
     setModal(!modal);
@@ -50,6 +74,8 @@ const CustomReactTable = () => {
   useEffect(() => {
     dispatch(fetchOrders(1));
     dispatch(fetchContacts());
+    dispatch(fetchProducts(1));
+    dispatch(fetchProductsKits(1));
   }, [dispatch]);
   
   const providers = useSelector((state) => state.providersReducer.contacts);
@@ -58,6 +84,40 @@ const CustomReactTable = () => {
 
   const totalPage = useSelector((state) => state.offersReducer.totalPage);
 
+  const handleAddElementProduct = () => {
+    setProductElements([...productElements, {
+      selectProduct: '',
+      elementsQuantity: 0,
+    }]);
+  };
+
+  const removeElementProduct = async (index) => {
+    const newElements = [...productElements];
+    newElements.splice(index, 1);
+    setProductElements(newElements);
+    let sum = 0;
+    await newElements.map((singleProductElement) => sum = sum + singleProductElement.totalPrice);
+    setTotalProduct(sum);
+  };
+
+  const handleChangeProducts = async (event, index) => {
+    const newElements = [...productElements];
+    let newObject = {}
+    if (event.target.name === 'selectProduct') {
+      newObject.selectProduct = event.target.value;
+      newObject.elementsQuantity = newElements[index].elementsQuantity;
+    } else {
+      newObject.selectProduct = newElements[index].selectProduct;
+      newObject.elementsQuantity = parseInt(event.target.value);
+    }
+    if (newObject.selectProduct && newObject.elementsQuantity) newObject.totalPrice = products.find((singleProduct) => singleProduct['@id'] === newObject.selectProduct).purchasePrice * newObject.elementsQuantity;
+    newElements[index] = newObject;
+    setProductElements(newElements);
+    let sum = 0;
+    await newElements.map((singleProductElement) => sum = sum + singleProductElement.totalPrice);
+    setTotalProduct(sum);
+  };
+
   const handleSubmit = (event) => {
     event.preventDefault()
     if (event.target.id.value !== undefined) {
@@ -65,46 +125,97 @@ const CustomReactTable = () => {
       const provider = event.target.provider.value;
       const orderDate = event.target.orderDate.value;
       const deliveryDate = event.target.deliveryDate.value;
-      const realDeliveryDate = event.target.realDeliveryDate.value;
+      const realDeliveryDate = event.target.realDeliveryDate.value !== "" ? event.target.realDeliveryDate.value : null;
       const color = event.target.color.value;
       const note = event.target.note.value;
       const remoteId = event.target.remoteId.value;
-      dispatch(UpdateOrder({"provider" : provider, "orderDate": orderDate, "deliveryDate": deliveryDate, "realDeliveryDate": realDeliveryDate, "color": color, "note": note, "id": id, "remoteId": remoteId}))
+      dispatch(UpdateOrder({"provider" : provider, "orderDate": orderDate, "deliveryDate": deliveryDate, "realDeliveryDate": realDeliveryDate, "color": color, "note": note, "id": id, "remoteId": remoteId, totalCost: parseInt(totalCost), productElements: productElements, productsKits: productsKitValue}))
     } else {
       const provider = event.target.provider.value;
       const orderDate = event.target.orderDate.value;
       const deliveryDate = event.target.deliveryDate.value;
-      const realDeliveryDate = event.target.realDeliveryDate.value;
+      const realDeliveryDate = event.target.realDeliveryDate.value !== "" ? event.target.realDeliveryDate.value : null;
       const color = event.target.color.value;
       const note = event.target.note.value;
-      dispatch(AddOrdersItem({"provider" : provider, "orderDate": orderDate, "deliveryDate": deliveryDate, "realDeliveryDate": realDeliveryDate, "color": color, "note": note}))
+      dispatch(AddOrdersItem({"provider" : provider, "orderDate": orderDate, "deliveryDate": deliveryDate, "realDeliveryDate": realDeliveryDate, "color": color, "note": note, totalCost: parseInt(totalCost), productElements: productElements, productsKits: productsKitValue }))
     }
     setModal(!modal);
   };
+
+  useEffect(() => {
+    console.log(totalProduct)
+    console.log(materialTotalCost)
+    setTotalCost(parseInt(materialTotalCost) + parseInt(totalProduct))
+    //setMaterialTotalCost(parseInt(materialTotalCost) + parseInt(totalProduct))
+  }, [totalProduct,materialTotalCost])
+
+  let productsKitsOptions = []
+  
+  productsKits.map((singleProductsKit) => productsKitsOptions.push({value: singleProductsKit['@id'], label: singleProductsKit.name}))
 
   const data2 = orders.map((prop, key) => {
     return {
       id: key,
       providerId: providers.find((singleProvider) => singleProvider['@id'] === prop.provider) && providers.find((singleProvider) => singleProvider['@id'] === prop.provider)['@id'],
       provider: providers.find((singleProvider) => singleProvider['@id'] === prop.provider) && providers.find((singleProvider) => singleProvider['@id'] === prop.provider).companyName,
-      orderDate: new Date(prop.orderDate).getFullYear() + "-" + (new Date(prop.orderDate).getMonth() < 9 ? ("0" + (new Date(prop.orderDate).getMonth() + 1)) : new Date(prop.orderDate).getMonth() + 1) + "-" + new Date(prop.orderDate).getDate(),
-      deliveryDate:  new Date(prop.deliveryDate).getFullYear() + "-" + (new Date(prop.deliveryDate).getMonth() < 9 ? ("0" + (new Date(prop.deliveryDate).getMonth() + 1)) : new Date(prop.deliveryDate).getMonth() + 1) + "-" + new Date(prop.deliveryDate).getDate(),
-      realDeliveryDate:  new Date(prop.realDeliveryDate).getFullYear() + "-" + (new Date(prop.realDeliveryDate).getMonth() < 9 ? ("0" + (new Date(prop.realDeliveryDate).getMonth() + 1)) : new Date(prop.realDeliveryDate).getMonth() + 1) + "-" + new Date(prop.realDeliveryDate).getDate(),
+      orderDate: new Date(prop.orderDate).getFullYear() + "-" + (new Date(prop.orderDate).getMonth() < 9 ? ("0" + (new Date(prop.orderDate).getMonth() + 1)) : new Date(prop.orderDate).getMonth() + 1) + "-" + (new Date(prop.orderDate).getDate() < 10 ? "0" + new Date(prop.orderDate).getDate() : new Date(prop.orderDate).getDate()),
+      deliveryDate:  new Date(prop.deliveryDate).getFullYear() + "-" + (new Date(prop.deliveryDate).getMonth() < 9 ? ("0" + (new Date(prop.deliveryDate).getMonth() + 1)) : new Date(prop.deliveryDate).getMonth() + 1) + "-" + (new Date(prop.deliveryDate).getDate() < 10 ? "0" + new Date(prop.deliveryDate).getDate() : new Date(prop.deliveryDate).getDate()),
+      realDeliveryDate: prop.realDeliveryDate && new Date(prop.realDeliveryDate).getFullYear() + "-" + (new Date(prop.realDeliveryDate).getMonth() < 9 ? ("0" + (new Date(prop.realDeliveryDate).getMonth() + 1)) : new Date(prop.realDeliveryDate).getMonth() + 1) + "-" + new Date(prop.realDeliveryDate).getDate(),
       color: prop.color,
       note: prop.note,
+      productElements: prop.productElements,
+      productsKitValue: prop.productsKits,
+      totalProduct: prop.totalCost,
       remoteId: prop.remoteId ? prop.remoteId : prop['@id'],
       orderDateString: new Date(prop.orderDate).getDate() + "-" + (new Date(prop.orderDate).getMonth() < 9 ? ("0" + (new Date(prop.orderDate).getMonth() + 1)) : new Date(prop.orderDate).getMonth() + 1) + "-" + new Date(prop.orderDate).getFullYear(),
       deliveryDateString: new Date(prop.deliveryDate).getDate()  + "-" + (new Date(prop.deliveryDate).getMonth() < 9 ? ("0" + (new Date(prop.deliveryDate).getMonth() + 1)) : new Date(prop.deliveryDate).getMonth() + 1) + "-" + new Date(prop.deliveryDate).getFullYear(),
-      realDeliveryDateString: new Date(prop.realDeliveryDate).getDate() + "-" + (new Date(prop.realDeliveryDate).getMonth() < 9 ? ("0" + (new Date(prop.realDeliveryDate).getMonth() + 1)) : new Date(prop.realDeliveryDate).getMonth() + 1) + "-" + new Date(prop.realDeliveryDate).getFullYear(),
+      realDeliveryDateString: prop.realDeliveryDate && (new Date(prop.realDeliveryDate).getDate() + "-" + (new Date(prop.realDeliveryDate).getMonth() < 9 ? ("0" + (new Date(prop.realDeliveryDate).getMonth() + 1)) : new Date(prop.realDeliveryDate).getMonth() + 1) + "-" + new Date(prop.realDeliveryDate).getFullYear()),
       actions: (
         // we've added some custom button actions
         <div className="text-center">
           {/* use this button to add a edit kind of action */}
+          {prop.delivered !== true ?
+          <Button 
+            onClick={() => {
+              const sobj = data2.find((o) => o.id === key);
+              console.log(sobj)
+              setModalDelivery(!modalDelivery);
+              setObj({id: key, delivered: true, remoteId: sobj.remoteId, productElements: sobj.productElements, productsKits: sobj.productsKitValue});
+						}}
+            className="m-1" 
+            color="success"
+            size="sm"
+            round="true"
+            icon="true">
+            CONSEGNATO
+          </Button>
+          :
+          <Button 
+            onClick={() => {
+              const sobj = data2.find((o) => o.id === key);
+              console.log(sobj)
+              setModalDelivery(!modalDelivery);
+              setObj({id: key, delivered: false, remoteId: sobj.remoteId, productElements: sobj.productElements, productsKits: sobj.productsKitValue});
+						}}
+            className="m-1" 
+            color="danger"
+            size="sm"
+            round="true"
+            icon="true">
+            ANNULLA CONSEGNA
+          </Button>
+          }
           <Button
             onClick={() => {
               const sobj = data2.find((o) => o.id === key);
               setModal(!modal);
               setObj(sobj);
+              setProductElements(sobj.productElements);
+              setProductsKitValue(sobj.productsKitValue);
+              setTotalProduct(sobj.totalProduct);
+              setTotalCost(parseInt(sobj.totalCost))
+              console.log("total cost")
+              console.log(sobj.totalCost)
               console.log(sobj)
               console.log(new Date(sobj.deliveryDate))
             }}
@@ -112,6 +223,7 @@ const CustomReactTable = () => {
             size="sm"
             round="true"
             icon="true"
+            className="m-1"
           >
             MODIFICA
           </Button>
@@ -122,11 +234,11 @@ const CustomReactTable = () => {
                 setModalDelete(!modalDelete);
                 setObj(sobj);
 							}}
-							className="ml-1"
+							className="m-1"
 							color="danger"
 							size="sm"
 							round="true"
-							icon="true"
+							icon="true" 
             >
 							CANCELLA
 					</Button>
@@ -157,7 +269,7 @@ const CustomReactTable = () => {
     };
   });
   return (
-    <div>
+    <div style={{width: "100%"}}>
       <BreadCrumbs />
       <Modal isOpen={modal} toggle={toggle.bind(null)}>
         <ModalHeader toggle={toggle.bind(null)}>Nuovo ordine</ModalHeader>
@@ -176,6 +288,55 @@ const CustomReactTable = () => {
                 {providers.map((singleProvider => obj !== null ? obj.providerId === singleProvider['@id'] && <option key={singleProvider['@id']} value={singleProvider['@id']} selected>{singleProvider.companyName}</option> : <option key={singleProvider['@id']} value={singleProvider['@id']}>{singleProvider.companyName}</option>))}
               </Input>
             </FormGroup>
+            <Label >Aggiungi materiale</Label>
+            <br/>
+            <FormGroup>
+              <Label >Aggiungi kit</Label>
+              <Select
+                closeMenuOnSelect={false}
+                isMulti
+                options={productsKitsOptions}
+                name="productsKit"
+                id="productsKit"
+                value={productsKitValue}
+                onChange={(e) => { let totalCostTemp = 0; e.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity)); setMaterialTotalCost(totalCostTemp); setProductsKitValue(e)}}
+              />
+            </FormGroup>
+            {productElements && productElements.map((element, index) => (
+            <FormGroup key={index}>
+              <Label for="product">Prodotto</Label>
+              <Input
+                id="selectProduct"
+                name="selectProduct"
+                type="select"
+                onChange={(event) => handleChangeProducts(event, index)}
+              >
+                <option>Scegli un prodotto...</option>
+                {products.map((singleProduct => element.selectProduct === singleProduct['@id'] ? <option selected key={singleProduct['@id']} value={singleProduct['@id']}>{singleProduct.name}</option> : <option key={singleProduct['@id']} value={singleProduct['@id']}>{singleProduct.name}</option>))}
+              </Input>
+              <br/>
+              <Label for="quantity">Quantità</Label>
+              <Input
+                type="number"
+                name="elementsQuantity"
+                id="elementsQuantity"
+                value={element.elementsQuantity}
+                onChange={(event) => handleChangeProducts(event, index)}
+              />
+              <br/>
+              <Button color="danger" type="button" onClick={removeElementProduct}>Rimuovi elemento</Button>
+            </FormGroup>))}
+            <Button color="primary" type="button" onClick={handleAddElementProduct}>Aggiungi elemento</Button>
+            <br/>
+            <Label>Costo totale ordine</Label>
+            <Input
+              type="number"
+              name="totalCost"
+              id="totalCost"
+              value={totalCost}
+              onChange={(event) => setTotalCost(event.target.value)}
+            />
+            <br/>
             <FormGroup>
               <Label for="orderDate">Data ordine</Label>
               <Input
@@ -262,12 +423,26 @@ const CustomReactTable = () => {
           </Button>
         </ModalBody>
       </Modal>
+      <Modal isOpen={modalDelivery} toggle={() => setModalDelivery(!modalDelivery)}>
+        <ModalHeader toggle={() => setModalDelivery(!modalDelivery)}>{obj.delivered !== true ? "Cancelli la consegna dell'ordine?" : "Confermi la consegna dell'ordine?" }</ModalHeader>
+        <ModalBody>
+          <Button style={{margin: "5px"}} color="danger" onClick={() => { dispatch(deliveredOrder(obj)); setModalDelivery(!modalDelivery)}}> Ordine {obj.delivered !== true && "non"} consegnato
+          </Button>
+          <Button
+            color="secondary"
+            className="ml-1"
+            onClick={() => setModalDelivery(!modalDelivery)}
+          >
+            Annulla
+          </Button>
+        </ModalBody>
+      </Modal>
       {/*--------------------------------------------------------------------------------*/}
       {/* Start Action table*/}
       {/*--------------------------------------------------------------------------------*/}
       <div className="p-3 border-bottom">
-        <Button color="danger" block onClick={() => { setObj(null); toggle() }}>
-          Crea un nuovo preventivo
+        <Button color="danger" block onClick={() => {  }}>
+          Crea un nuovo ordine
         </Button>
       </div>
       <ComponentCard title="Ordini">
@@ -290,10 +465,6 @@ const CustomReactTable = () => {
               accessor: "realDeliveryDateString",
             },
             {
-              Header: "note",
-              accessor: "note",
-            },
-            {
               Header: "Azioni",
               accessor: "actions",
               sortable: false,
@@ -311,7 +482,6 @@ const CustomReactTable = () => {
             await dispatch(fetchOrders(pageIndex + 1));
           }}
           getTrProps={(state, rowInfo, column) => {
-            if (rowInfo !== undefined) console.log(rowInfo.row['_original'])
             if (rowInfo !== undefined)
               return {
                 style: {

@@ -147,7 +147,7 @@ const CustomReactTable = () => {
   }, [mechanicalAssemblyTimeCost,mechanicalAssemblyTime]);
 
   useEffect(() => {
-    let priceToAdd = (customTotalCost !== "" ? parseInt(materialTotalCost) + parseInt(customTotalCost) : parseInt(materialTotalCost)) + (parseInt(totalProduct))    
+    let priceToAdd = (customTotalCost !== "" ? parseInt(materialTotalCost) + parseInt(customTotalCost) : parseInt(materialTotalCost)) + (parseInt(totalProduct))
     if (priceToAdd === NaN) priceToAdd = 0;
     console.log(priceToAdd)
     priceToAdd = priceToAdd + parseInt(preparationCost) + parseInt(mechanicalAssemblyCost) + parseInt(electricalDesignCost) + parseInt(mechanicalDesignCost) + parseInt(panelWiringCost) + parseInt(electricalWiringOnBoardTheMachine);
