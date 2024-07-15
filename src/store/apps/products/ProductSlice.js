@@ -157,12 +157,12 @@ export const {
 export const UpdateProduct = (payload) => async (dispatch) => {
   try {
     console.log(payload)
-    const value = await axios.patch('http://awtapi.softwarehouseparma.net' + payload.remoteId, payload, {
+    const value = await axios.patch('https://awtapi.softwarehouseparma.net' + payload.remoteId, payload, {
       headers: {
         'Content-Type': 'application/merge-patch+json',
       }
     })
-    //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
+    //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
     dispatch(SetProduct(payload.id,payload.productId,payload.name,payload.category,payload.stockQuantity,payload.lowLevel,payload.availableQuantity,payload.allocatedQuantity,payload.restockDate,payload.lastRestockQuantity,payload.purchasePrice,payload.sellPrice,payload.weight,payload.dimension,payload.provider,payload.note,value.data['@id']));
   } catch (err) {
     throw new Error(err);
@@ -171,12 +171,12 @@ export const UpdateProduct = (payload) => async (dispatch) => {
 
 export const AddProductsItem = (payload) => async (dispatch) => {
   try {
-    const value = await axios.post('http://awtapi.softwarehouseparma.net/api/product_stocks', payload, {
+    const value = await axios.post('https://awtapi.softwarehouseparma.net/api/product_stocks', payload, {
       headers: {
         'Content-Type': 'application/ld+json',
       }
     })
-    //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
+    //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
     dispatch(addProduct(payload.productId,payload.name,payload.category,payload.stockQuantity,payload.lowLevel,payload.availableQuantity,payload.allocatedQuantity,payload.restockDate,payload.lastRestockQuantity,payload.purchasePrice,payload.sellPrice,payload.weight,payload.dimension,payload.provider,payload.note,value.data['@id']));
   } catch (err) {
     throw new Error(err);
@@ -185,7 +185,7 @@ export const AddProductsItem = (payload) => async (dispatch) => {
 
 export const fetchProducts = (page) => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/product_stocks?page=' + page);
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/product_stocks?page=' + page);
     dispatch(getProducts(response.data['hydra:member']));
     response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
   } catch (err) {
@@ -195,7 +195,7 @@ export const fetchProducts = (page) => async (dispatch) => {
 
 export const deleteProductItem = (remoteId,index) => async (dispatch) => {
   try {
-    const response = await axios.delete('http://awtapi.softwarehouseparma.net' + remoteId);
+    const response = await axios.delete('https://awtapi.softwarehouseparma.net' + remoteId);
     dispatch(DeleteProduct(index));
   } catch (err) {
     throw new Error(err);

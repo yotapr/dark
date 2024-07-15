@@ -138,13 +138,13 @@ export const {
 
 export const UpdateOrder = (payload) => async (dispatch) => {
   try {
-    const value = await axios.patch('http://awtapi.softwarehouseparma.net' + payload.remoteId, payload, {
+    const value = await axios.patch('https://awtapi.softwarehouseparma.net' + payload.remoteId, payload, {
       headers: {
         'Content-Type': 'application/merge-patch+json',
       }
     })
     console.log(payload)
-    //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
+    //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
     dispatch(SetOrder(payload.provider,payload.orderDate,payload.deliveryDate,payload.realDeliveryDate,payload.color,payload.note,payload.productElements,payload.productsKits,payload.totalCost,payload.id,payload.remoteId));
   } catch (err) {
     throw new Error(err);
@@ -153,13 +153,13 @@ export const UpdateOrder = (payload) => async (dispatch) => {
 
 export const AddOrdersItem = (payload) => async (dispatch) => {
   try {
-    const value = await axios.post('http://awtapi.softwarehouseparma.net/api/order_products', payload, {
+    const value = await axios.post('https://awtapi.softwarehouseparma.net/api/order_products', payload, {
       headers: {
         'Content-Type': 'application/ld+json',
       }
     })
     console.log(value.data['@id'])
-    //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
+    //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
     dispatch(addOrder(payload.provider,payload.orderDate,payload.deliveryDate,payload.realDeliveryDate,payload.color,payload.note,payload.productElements,{"productsKitValue": payload.productsKits},payload.totalProduct,value.data['@id']));
   } catch (err) {
     throw new Error(err);
@@ -168,7 +168,7 @@ export const AddOrdersItem = (payload) => async (dispatch) => {
 
 export const fetchOrders = (page) => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/order_products?page=' + page);
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/order_products?page=' + page);
     dispatch(getOrders(response.data['hydra:member']));
     response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
   } catch (err) {
@@ -178,7 +178,7 @@ export const fetchOrders = (page) => async (dispatch) => {
 
 export const deliveredOrder = (payload) => async (dispatch) => {
   try {
-    const response = await axios.post('http://awtapi.softwarehouseparma.net/api/ordersyncro', payload, {
+    const response = await axios.post('https://awtapi.softwarehouseparma.net/api/ordersyncro', payload, {
       headers: {
         'Content-Type': 'application/ld+json',
       }
@@ -196,7 +196,7 @@ export const deliveredOrder = (payload) => async (dispatch) => {
 
 export const deleteOrderItem = (remoteId,index) => async (dispatch) => {
   try {
-    const response = await axios.delete('http://awtapi.softwarehouseparma.net' + remoteId);
+    const response = await axios.delete('https://awtapi.softwarehouseparma.net' + remoteId);
     dispatch(DeleteOrder(index));
   } catch (err) {
     throw new Error(err);

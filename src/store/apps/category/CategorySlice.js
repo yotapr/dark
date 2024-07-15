@@ -78,7 +78,7 @@ export const {
 
 export const fetchCategories = () => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/product_categories');
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/product_categories');
     dispatch(getCategories(response.data['hydra:member']));
   } catch (err) {
     throw new Error(err);

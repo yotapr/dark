@@ -189,12 +189,12 @@ export const {
 
 export const UpdateContact = (payload) => async (dispatch) => {
   try {
-    const value = await axios.patch('http://awtapi.softwarehouseparma.net' + payload.remoteId, payload, {
+    const value = await axios.patch('https://awtapi.softwarehouseparma.net' + payload.remoteId, payload, {
       headers: {
         'Content-Type': 'application/merge-patch+json',
       }
     })
-    //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
+    //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
     dispatch(SetContact(payload.id,payload.companyName,payload.address,payload.image,payload.taxCode,payload.vatNumber,payload.phoneNumber,payload.email,payload.contactName,payload.contactPhone,payload.contactEmail,payload.clientCode,payload.startDate,payload.dossier,payload.creditLimit,payload.sdiCode,payload.invoiceCode,payload.website,payload.note,payload.remoteId));
   } catch (err) {
     throw new Error(err);
@@ -203,7 +203,7 @@ export const UpdateContact = (payload) => async (dispatch) => {
 
 export const AddContactItem = (payload) => async (dispatch) => {
   try {
-    const value = await axios.post('http://awtapi.softwarehouseparma.net/api/clients', payload, {
+    const value = await axios.post('https://awtapi.softwarehouseparma.net/api/clients', payload, {
       headers: {
         'Content-Type': 'application/ld+json',
       }
@@ -216,7 +216,7 @@ export const AddContactItem = (payload) => async (dispatch) => {
 
 export const fetchContacts = () => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/clients');
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/clients');
     dispatch(getContacts(response.data['hydra:member']));
     response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
   } catch (err) {
@@ -225,7 +225,7 @@ export const fetchContacts = () => async (dispatch) => {
 };
 export const addContactsPage = (currentPage,keySearch) => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/clients?page=' + currentPage + '&companyName=' + keySearch);
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/clients?page=' + currentPage + '&companyName=' + keySearch);
     dispatch(addContacts(response.data['hydra:member']));
   } catch (err) {
     throw new Error(err);
@@ -233,7 +233,7 @@ export const addContactsPage = (currentPage,keySearch) => async (dispatch) => {
 };
 export const deleteContactItem = (remoteId,index) => async (dispatch) => {
   try {
-    const response = await axios.delete('http://awtapi.softwarehouseparma.net' + remoteId);
+    const response = await axios.delete('https://awtapi.softwarehouseparma.net' + remoteId);
     dispatch(DeleteContact(index));
   } catch (err) {
     throw new Error(err);
@@ -241,7 +241,7 @@ export const deleteContactItem = (remoteId,index) => async (dispatch) => {
 };
 export const searchContacts = (currentPage,keySearch) => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/clients?page=' + currentPage + '&companyName=' + keySearch);
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/clients?page=' + currentPage + '&companyName=' + keySearch);
     dispatch(getContacts(response.data['hydra:member']));
     dispatch(SearchContact(keySearch));
     response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))

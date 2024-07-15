@@ -119,13 +119,13 @@ export const {
 export const UpdateSalesAgents = (payload) => async (dispatch) => {
   console.log(payload)  
   try {
-    const value = await axios.patch('http://awtapi.softwarehouseparma.net' + payload.remoteId, payload, {
+    const value = await axios.patch('https://awtapi.softwarehouseparma.net' + payload.remoteId, payload, {
       headers: {
         'Content-Type': 'application/merge-patch+json',
       }
     })
         
-    //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
+    //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
     dispatch(SetSalesAgent(payload.id,payload.name,payload.clients,payload.offers,payload.remoteId));
   } catch (err) {
     throw new Error(err);
@@ -134,13 +134,13 @@ export const UpdateSalesAgents = (payload) => async (dispatch) => {
 
 export const AddSalesAgentsItem = (payload) => async (dispatch) => {
   try {
-    const value = await axios.post('http://awtapi.softwarehouseparma.net/api/sales_agents', payload, {
+    const value = await axios.post('https://awtapi.softwarehouseparma.net/api/sales_agents', payload, {
       headers: {
         'Content-Type': 'application/ld+json',
       }
     })
     console.log(value.data['@id'])
-    //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
+    //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
     dispatch(addSalesAgent(payload.id,payload.name,payload.clients,payload.offers,value.data['@id']));
   } catch (err) {
     throw new Error(err);
@@ -149,7 +149,7 @@ export const AddSalesAgentsItem = (payload) => async (dispatch) => {
 
 export const fetchSalesAgents = (page) => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agents?page=' + page);
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agents?page=' + page);
     dispatch(getSalesAgents(response.data['hydra:member']));
     response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
   } catch (err) {
@@ -159,7 +159,7 @@ export const fetchSalesAgents = (page) => async (dispatch) => {
 
 export const deleteSalesAgentsItem = (remoteId,index) => async (dispatch) => {
   try {
-    const response = await axios.delete('http://awtapi.softwarehouseparma.net' + remoteId);
+    const response = await axios.delete('https://awtapi.softwarehouseparma.net' + remoteId);
     dispatch(DeleteSalesAgent(index));
   } catch (err) {
     throw new Error(err);

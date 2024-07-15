@@ -105,12 +105,12 @@ export const {
 export const UpdateProductsKit = (payload) => async (dispatch) => {
   try {
     console.log(payload)
-    const value = await axios.patch('http://awtapi.softwarehouseparma.net' + payload.remoteId, payload, {
+    const value = await axios.patch('https://awtapi.softwarehouseparma.net' + payload.remoteId, payload, {
       headers: {
         'Content-Type': 'application/merge-patch+json',
       }
     })
-    //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
+    //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
     dispatch(SetProductsKit(payload.name,payload.products,value.data['@id']));
   } catch (err) {
     throw new Error(err);
@@ -119,13 +119,13 @@ export const UpdateProductsKit = (payload) => async (dispatch) => {
 
 export const AddProductsKitItem = (payload) => async (dispatch) => {
   try {
-    const value = await axios.post('http://awtapi.softwarehouseparma.net/api/kit_products', payload, {
+    const value = await axios.post('https://awtapi.softwarehouseparma.net/api/kit_products', payload, {
       headers: {
         'Content-Type': 'application/ld+json',
       }
     })
     console.log(value)
-    //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
+    //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
     dispatch(addProductsKit(payload.name,payload.products,value.data['@id']));
   } catch (err) {
     throw new Error(err);
@@ -134,7 +134,7 @@ export const AddProductsKitItem = (payload) => async (dispatch) => {
 
 export const fetchProductsKits = (page) => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/kit_products?page=' + page);
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/kit_products?page=' + page);
     dispatch(getProductsKits(response.data['hydra:member']));
     response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
   } catch (err) {
@@ -144,7 +144,7 @@ export const fetchProductsKits = (page) => async (dispatch) => {
 
 export const deleteProductsKitItem = (remoteId,index) => async (dispatch) => {
   try {
-    const response = await axios.delete('http://awtapi.softwarehouseparma.net' + remoteId);
+    const response = await axios.delete('https://awtapi.softwarehouseparma.net' + remoteId);
     dispatch(DeleteProductsKit(index));
   } catch (err) {
     throw new Error(err);

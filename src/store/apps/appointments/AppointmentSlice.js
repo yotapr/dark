@@ -97,7 +97,7 @@ export const {
 
 export const fetchAppointments = () => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/appointments');
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/appointments');
     dispatch(getAppointments(response.data['hydra:member']));
   } catch (err) {
     throw new Error(err);
@@ -106,7 +106,7 @@ export const fetchAppointments = () => async (dispatch) => {
 
 export const addNewAppointment = (payload) => async (dispatch) => {
   try {
-    const response = await axios.post('http://awtapi.softwarehouseparma.net/api/appointments',payload, {
+    const response = await axios.post('https://awtapi.softwarehouseparma.net/api/appointments',payload, {
       headers: {
         'Content-Type': 'application/ld+json',
       }
@@ -119,7 +119,7 @@ export const addNewAppointment = (payload) => async (dispatch) => {
 
 export const editAppointment = (payload) => async (dispatch) => {
   try {
-    const response = await axios.put('http://awtapi.softwarehouseparma.net' + payload.id,payload, {
+    const response = await axios.put('https://awtapi.softwarehouseparma.net' + payload.id,payload, {
       headers: {
         'Content-Type': 'application/ld+json',
       }
@@ -132,7 +132,7 @@ export const editAppointment = (payload) => async (dispatch) => {
 
 export const removeAppointment = (payload) => (dispatch) => {
   try {
-    axios.delete('http://awtapi.softwarehouseparma.net' + payload.id);
+    axios.delete('https://awtapi.softwarehouseparma.net' + payload.id);
     //dispatch(UpdateAppointment(response.data.title, response.data.appointmentStart, response.data.appointmentEnd, response.data.color));
   } catch (err) {
     throw new Error(err);
@@ -141,7 +141,7 @@ export const removeAppointment = (payload) => (dispatch) => {
 
 export const fetchUsers = () => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/users');
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/users');
     dispatch(getUsers(response.data['hydra:member']));
   } catch (err) {
     throw new Error(err);
@@ -150,7 +150,7 @@ export const fetchUsers = () => async (dispatch) => {
 
 export const fetchCalendars = () => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/calendars');
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/calendars');
     dispatch(getCalendars(response.data['hydra:member']));
   } catch (err) {
     throw new Error(err);
@@ -159,7 +159,7 @@ export const fetchCalendars = () => async (dispatch) => {
 
 export const searchCalendars = (calendar) => async (dispatch) => {
   try {
-    const response = await axios.get('http://awtapi.softwarehouseparma.net/api/appointments?calendar=' + calendar);
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/appointments?calendar=' + calendar);
     dispatch(getAppointments(response.data['hydra:member']));
   } catch (err) {
     throw new Error(err);
