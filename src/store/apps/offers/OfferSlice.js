@@ -52,7 +52,7 @@ export const OfferSlice = createSlice({
         electricalDesignTime,
         electricalDesignCost,
         electricalWiringOnBoardTheMachine,
-        panelWiringCost,
+        //panelWiringCost,
         mechanicalAssemblyCost,
         mechanicalAssemblyTimeCost,
         mechanicalAssemblyTime,
@@ -62,6 +62,10 @@ export const OfferSlice = createSlice({
         price,
         preparationCost,
         revenuePercentage,
+        electricalPanelCost,
+        testingTime,
+        testingCost,
+        testingTotalCost,
         id
       ) => {
         return {
@@ -79,7 +83,7 @@ export const OfferSlice = createSlice({
             electricalDesignTime,
             electricalDesignCost,
             electricalWiringOnBoardTheMachine,
-            panelWiringCost,
+            //panelWiringCost,
             mechanicalAssemblyCost,
             mechanicalAssemblyTimeCost,
             mechanicalAssemblyTime,
@@ -89,6 +93,10 @@ export const OfferSlice = createSlice({
             price,
             preparationCost,
             revenuePercentage,
+            electricalPanelCost,
+            testingTime,
+            testingCost,
+            testingTotalCost,
             id
           },
         };
@@ -113,7 +121,7 @@ export const OfferSlice = createSlice({
         electricalDesignTime,
         electricalDesignCost,
         electricalWiringOnBoardTheMachine,
-        panelWiringCost,
+        //panelWiringCost,
         mechanicalAssemblyCost,
         mechanicalAssemblyTimeCost,
         mechanicalAssemblyTime,
@@ -123,6 +131,10 @@ export const OfferSlice = createSlice({
         price,
         preparationCost,
         revenuePercentage,
+        electricalPanelCost,
+        testingTime,
+        testingCost,
+        testingTotalCost,
         remoteId
       ) => {
         return {
@@ -140,7 +152,7 @@ export const OfferSlice = createSlice({
             electricalDesignTime,
             electricalDesignCost,
             electricalWiringOnBoardTheMachine,
-            panelWiringCost,
+            //panelWiringCost,
             mechanicalAssemblyCost,
             mechanicalAssemblyTimeCost,
             mechanicalAssemblyTime,
@@ -150,6 +162,10 @@ export const OfferSlice = createSlice({
             price,
             preparationCost,
             revenuePercentage,
+            electricalPanelCost,
+            testingTime,
+            testingCost,
+            testingTotalCost,
             remoteId
           },
         };

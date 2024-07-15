@@ -51,8 +51,8 @@ export const OrderSlice = createSlice({
         color,
         note,
         productElements,
-        productsKitValue,
-        totalProduct,
+        productsKits,
+        totalCost,
         id,
         remoteId
       ) => {
@@ -65,8 +65,8 @@ export const OrderSlice = createSlice({
             color,
             note,
             productElements,
-            productsKitValue,
-            totalProduct,
+            productsKits,
+            totalCost,
             id,
             remoteId
           },
@@ -143,8 +143,9 @@ export const UpdateOrder = (payload) => async (dispatch) => {
         'Content-Type': 'application/merge-patch+json',
       }
     })
+    console.log(payload)
     //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
-    dispatch(SetOrder(payload.provider,payload.orderDate,payload.deliveryDate,payload.realDeliveryDate,payload.color,payload.note,payload.productElements,payload.productsKitValue,payload.totalProduct,payload.id,payload.remoteId));
+    dispatch(SetOrder(payload.provider,payload.orderDate,payload.deliveryDate,payload.realDeliveryDate,payload.color,payload.note,payload.productElements,payload.productsKits,payload.totalCost,payload.id,payload.remoteId));
   } catch (err) {
     throw new Error(err);
   }
@@ -159,7 +160,7 @@ export const AddOrdersItem = (payload) => async (dispatch) => {
     })
     console.log(value.data['@id'])
     //const response = await axios.get('http://awtapi.softwarehouseparma.net/api/sales_agentss');
-    dispatch(addOrder(payload.provider,payload.orderDate,payload.deliveryDate,payload.realDeliveryDate,payload.color,payload.note,payload.productElements,payload.productsKitValue,payload.totalProduct,value.data['@id']));
+    dispatch(addOrder(payload.provider,payload.orderDate,payload.deliveryDate,payload.realDeliveryDate,payload.color,payload.note,payload.productElements,{"productsKitValue": payload.productsKits},payload.totalProduct,value.data['@id']));
   } catch (err) {
     throw new Error(err);
   }

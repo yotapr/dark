@@ -64,7 +64,9 @@ const CustomReactTable = () => {
   const productsKits = useSelector((state) => state.productsKitsReducer.productsKits);
   const [materialTotalCost, setMaterialTotalCost] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
-  
+  const [totalKitPrice, setTotalKitPrice] = useState(0);
+  const [totalProductPrice, setTotalProductPrice] = useState(0);
+
   const toggle = () => {
     setModal(!modal);
   };
@@ -96,9 +98,21 @@ const CustomReactTable = () => {
     newElements.splice(index, 1);
     setProductElements(newElements);
     let sum = 0;
+    let totalCostTemp = 0;
     await newElements.map((singleProductElement) => sum = sum + singleProductElement.totalPrice);
-    setTotalProduct(sum);
+    productsKitValue.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity));
+    sum = sum + totalCostTemp;
+    setTotalCost(sum);
   };
+  const handleChangeKit = async (event) => {
+    let totalCostTemp = 0;
+    let sum = 0;
+    await event.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity)); 
+    await productElements.map((singleProductElement) => sum = sum + singleProductElement.totalPrice);
+    setProductsKitValue(event);
+    sum = sum + totalCostTemp;
+    setTotalCost(sum);
+  }
 
   const handleChangeProducts = async (event, index) => {
     const newElements = [...productElements];
@@ -114,13 +128,20 @@ const CustomReactTable = () => {
     newElements[index] = newObject;
     setProductElements(newElements);
     let sum = 0;
+    let totalCostTemp = 0;
     await newElements.map((singleProductElement) => sum = sum + singleProductElement.totalPrice);
-    setTotalProduct(sum);
+    productsKitValue.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity));
+    sum = sum + totalCostTemp;
+    setTotalCost(sum);
   };
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    if (event.target.id.value !== undefined) {
+    console.log("id");
+    console.log(event.target.id)
+    console.log("remote id");
+    console.log(event.target.remoteId)
+    if (event.target.remoteId !== undefined) {
       const id = event.target.id.value;
       const provider = event.target.provider.value;
       const orderDate = event.target.orderDate.value;
@@ -143,11 +164,9 @@ const CustomReactTable = () => {
   };
 
   useEffect(() => {
-    console.log(totalProduct)
-    console.log(materialTotalCost)
-    setTotalCost(parseInt(materialTotalCost) + parseInt(totalProduct))
+    setTotalCost(parseInt(totalKitPrice) + parseInt(totalProductPrice))
     //setMaterialTotalCost(parseInt(materialTotalCost) + parseInt(totalProduct))
-  }, [totalProduct,materialTotalCost])
+  }, [totalKitPrice,totalProductPrice])
 
   let productsKitsOptions = []
   
@@ -160,7 +179,7 @@ const CustomReactTable = () => {
       provider: providers.find((singleProvider) => singleProvider['@id'] === prop.provider) && providers.find((singleProvider) => singleProvider['@id'] === prop.provider).companyName,
       orderDate: new Date(prop.orderDate).getFullYear() + "-" + (new Date(prop.orderDate).getMonth() < 9 ? ("0" + (new Date(prop.orderDate).getMonth() + 1)) : new Date(prop.orderDate).getMonth() + 1) + "-" + (new Date(prop.orderDate).getDate() < 10 ? "0" + new Date(prop.orderDate).getDate() : new Date(prop.orderDate).getDate()),
       deliveryDate:  new Date(prop.deliveryDate).getFullYear() + "-" + (new Date(prop.deliveryDate).getMonth() < 9 ? ("0" + (new Date(prop.deliveryDate).getMonth() + 1)) : new Date(prop.deliveryDate).getMonth() + 1) + "-" + (new Date(prop.deliveryDate).getDate() < 10 ? "0" + new Date(prop.deliveryDate).getDate() : new Date(prop.deliveryDate).getDate()),
-      realDeliveryDate: prop.realDeliveryDate && new Date(prop.realDeliveryDate).getFullYear() + "-" + (new Date(prop.realDeliveryDate).getMonth() < 9 ? ("0" + (new Date(prop.realDeliveryDate).getMonth() + 1)) : new Date(prop.realDeliveryDate).getMonth() + 1) + "-" + new Date(prop.realDeliveryDate).getDate(),
+      realDeliveryDate: prop.realDeliveryDate && (new Date(prop.realDeliveryDate).getFullYear() + "-" + (new Date(prop.realDeliveryDate).getMonth() < 9 ? ("0" + (new Date(prop.realDeliveryDate).getMonth() + 1)) : new Date(prop.realDeliveryDate).getMonth() + 1) + "-" + (new Date(prop.realDeliveryDate).getDate() < 10 ? "0" + new Date(prop.realDeliveryDate).getDate() : new Date(prop.realDeliveryDate).getDate())),
       color: prop.color,
       note: prop.note,
       productElements: prop.productElements,
@@ -212,12 +231,7 @@ const CustomReactTable = () => {
               setObj(sobj);
               setProductElements(sobj.productElements);
               setProductsKitValue(sobj.productsKitValue);
-              setTotalProduct(sobj.totalProduct);
-              setTotalCost(parseInt(sobj.totalCost))
-              console.log("total cost")
-              console.log(sobj.totalCost)
-              console.log(sobj)
-              console.log(new Date(sobj.deliveryDate))
+              setTotalCost(parseInt(sobj.totalProduct))
             }}
             color="primary"
             size="sm"
@@ -275,8 +289,8 @@ const CustomReactTable = () => {
         <ModalHeader toggle={toggle.bind(null)}>Nuovo ordine</ModalHeader>
         <ModalBody>
           <Form onSubmit={(event) => handleSubmit(event)}>
-            {obj !== null && <Input type="hidden" name="id" id="id" defaultValue={obj.id} />}
-            {obj !== null && <Input type="hidden" name="remoteId" id="remoteId" defaultValue={obj.remoteId} />}
+            {Object.keys(obj).length > 0 && <Input type="hidden" name="id" id="id" defaultValue={obj.id} />}
+            {Object.keys(obj).length > 0 && <Input type="hidden" name="remoteId" id="remoteId" defaultValue={obj.remoteId} />}
             <FormGroup>
               <Label for="provider">Fornitore</Label>
               <Input
@@ -285,7 +299,11 @@ const CustomReactTable = () => {
                 type="select"
               >
                 <option>Scegli un fornitore...</option>
-                {providers.map((singleProvider => obj !== null ? obj.providerId === singleProvider['@id'] && <option key={singleProvider['@id']} value={singleProvider['@id']} selected>{singleProvider.companyName}</option> : <option key={singleProvider['@id']} value={singleProvider['@id']}>{singleProvider.companyName}</option>))}
+                
+                {providers.map((singleProvider => (obj !== null && obj.providerId === singleProvider['@id']) ? 
+                <option key={singleProvider['@id']} value={singleProvider['@id']} selected>{singleProvider.companyName}</option> 
+                : 
+                <option key={singleProvider['@id']} value={singleProvider['@id']}>{singleProvider.companyName}</option>))}
               </Input>
             </FormGroup>
             <Label >Aggiungi materiale</Label>
@@ -299,7 +317,7 @@ const CustomReactTable = () => {
                 name="productsKit"
                 id="productsKit"
                 value={productsKitValue}
-                onChange={(e) => { let totalCostTemp = 0; e.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity)); setMaterialTotalCost(totalCostTemp); setProductsKitValue(e)}}
+                onChange={(e) => handleChangeKit(e)}
               />
             </FormGroup>
             {productElements && productElements.map((element, index) => (
@@ -334,7 +352,6 @@ const CustomReactTable = () => {
               name="totalCost"
               id="totalCost"
               value={totalCost}
-              onChange={(event) => setTotalCost(event.target.value)}
             />
             <br/>
             <FormGroup>
@@ -441,7 +458,7 @@ const CustomReactTable = () => {
       {/* Start Action table*/}
       {/*--------------------------------------------------------------------------------*/}
       <div className="p-3 border-bottom">
-        <Button color="danger" block onClick={() => {  }}>
+        <Button color="danger" block onClick={() => { setObj({}); setProductElements([]); setTotalKitPrice(0); setTotalProductPrice(0); setTotalCost(0); setProductsKitValue(null); setModal(!modal); }}>
           Crea un nuovo ordine
         </Button>
       </div>

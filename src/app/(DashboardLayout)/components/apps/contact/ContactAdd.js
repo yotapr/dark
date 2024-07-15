@@ -289,12 +289,12 @@ const ContactAdd = ({ click }) => {
           </Col>
           <Col md={6}>
             <FormGroup>
-            <Label for="contactsEmail">Email contatto</Label>
+            <Label for="contactsPhone">Telefono contatto</Label>
               <Input
                 type="text"
-                name="contactsEmail"
-                id="contactsEmail"
-                value={singleOtherContact.contactsEmail}
+                name="contactsPhone"
+                id="contactsPhone"
+                value={singleOtherContact.contactsPhone}
                 onChange={(event) => handleChangeContacts(event, index)}
               />
               <br/>
@@ -304,12 +304,12 @@ const ContactAdd = ({ click }) => {
           <Row>
           <Col md={6}>
             <FormGroup>
-            <Label for="contactsPhone">Telefono contatto</Label>
+            <Label for="contactsEmail">Email contatto</Label>
               <Input
                 type="text"
-                name="contactsPhone"
-                id="contactsPhone"
-                value={singleOtherContact.contactsPhone}
+                name="contactsEmail"
+                id="contactsEmail"
+                value={singleOtherContact.contactsEmail}
                 onChange={(event) => handleChangeContacts(event, index)}
               />
               <br/>

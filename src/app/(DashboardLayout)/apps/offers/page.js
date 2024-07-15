@@ -68,14 +68,22 @@ const CustomReactTable = () => {
   const [mechanicalAssemblyTimeCost, setMechanicalAssemblyTimeCost] = useState(0);
   const [mechanicalAssemblyTime, setMechanicalAssemblyTime] = useState(0);
   const [mechanicalAssemblyCost, setMechanicalAssemblyCost] = useState(0);
+  const [testingTime, setTestingTime] = useState(0);
+  const [testingCost, setTestingCost] = useState(0);
+  const [testingTotalCost, setTestingTotalCost] = useState(0);
   const [electricalWiringOnBoardTheMachine, setElectricalWiringOnBoardTheMachine] = useState(0);
   const [preparationCost,setPreparationCost] = useState(0);
-  const [panelWiringCost,setPanelWiringCost] = useState(0);
+  //const [panelWiringCost,setPanelWiringCost] = useState(0);
   const [revenuePercentage,setRevenuePercentage] = useState(0);
   const [rechargePercentage,setRechargePercentage] = useState(0);
   const [calculatedPrice,setCalculatedPrice] = useState(0);
+  const [firstPrice,setFirstPrice] = useState(0);
+  const [secondPrice,setSecondPrice] = useState(0);
   const [productsKitValue,setProductsKitValue] = useState(null);
-  
+  const [electricalPanelCost, setElectricalPanelCost] = useState(0);
+  const [customProducts, setCustomProducts] = useState([]);
+  const [totalCustomProduct, setTotalCustomProduct] = useState(0);
+
   const toggle = () => {
     setModal(!modal);
   };
@@ -102,6 +110,38 @@ const CustomReactTable = () => {
 
   const totalPage = useSelector((state) => state.offersReducer.totalPage);
   
+  const handleAddElementCustomProduct = () => {
+    setCustomProducts([...customProducts, {
+      customProduct: '',
+      customQuantity: 0,
+      customPrice: 0
+    }]);
+  };
+
+  const removeElementCustomProduct = async (index) => {
+    const newElements = [...customProducts];
+    newElements.splice(index, 1);
+    setCustomProducts(newElements);
+    let sum = 0;
+    await newElements.map((singleCustomProduct) => sum = sum + singleCustomProduct.customPrice);
+    setTotalCustomProduct(sum);
+  };
+
+  const handleChangeCustomProducts = async (event, index) => {
+    const newElements = [...customProducts];
+    if (event.target.name === 'customProduct') {
+      newElements[index].customProduct = event.target.value;
+    } else if (event.target.name === 'customQuantity') {
+      newElements[index].customQuantity = parseInt(event.target.value);
+    } else {
+      newElements[index].customPrice = parseInt(event.target.value);
+    }
+    setCustomProducts(newElements);
+    let sum = 0;
+    await newElements.map((singleProductElement) => sum = sum + singleProductElement.customPrice);
+    setTotalCustomProduct(sum);
+  };
+
   const handleAddElementProduct = () => {
     setProductElements([...productElements, {
       selectProduct: '',
@@ -137,12 +177,14 @@ const CustomReactTable = () => {
   }, [mechanicalDesignTimeCost,mechanicalDesignTime]);
   
   useEffect(() => {
+    setTestingTotalCost(parseInt(testingTime) * parseInt(testingCost))
+  }, [testingCost,testingTime]);
+
+  useEffect(() => {
     setElectricalDesignCost(parseInt(electricalDesignTimeCost) * parseInt(electricalDesignTime))
   }, [electricalDesignTimeCost,electricalDesignTime]);
   
   useEffect(() => {
-    console.log(parseInt(mechanicalAssemblyTimeCost))
-    console.log(parseInt(mechanicalAssemblyTime))
     setMechanicalAssemblyCost(parseInt(mechanicalAssemblyTimeCost) * parseInt(mechanicalAssemblyTime))
   }, [mechanicalAssemblyTimeCost,mechanicalAssemblyTime]);
 
@@ -150,11 +192,13 @@ const CustomReactTable = () => {
     let priceToAdd = (customTotalCost !== "" ? parseInt(materialTotalCost) + parseInt(customTotalCost) : parseInt(materialTotalCost)) + (parseInt(totalProduct))
     if (priceToAdd === NaN) priceToAdd = 0;
     console.log(priceToAdd)
-    priceToAdd = priceToAdd + parseInt(preparationCost) + parseInt(mechanicalAssemblyCost) + parseInt(electricalDesignCost) + parseInt(mechanicalDesignCost) + parseInt(panelWiringCost) + parseInt(electricalWiringOnBoardTheMachine);
+    priceToAdd = priceToAdd + parseInt(preparationCost) + parseInt(mechanicalAssemblyCost) + parseInt(electricalDesignCost) + parseInt(mechanicalDesignCost) + parseInt(electricalWiringOnBoardTheMachine) + parseInt(electricalPanelCost) + parseInt(totalCustomProduct) + parseInt(testingTotalCost);
+    setFirstPrice(priceToAdd);
     priceToAdd = priceToAdd + (priceToAdd / 100 * parseInt(rechargePercentage));
+    setSecondPrice(priceToAdd);
     priceToAdd = priceToAdd - (priceToAdd / 100 * parseInt(revenuePercentage));
     setCalculatedPrice(priceToAdd); 
-  }, [totalProduct,materialTotalCost,customTotalCost,revenuePercentage,rechargePercentage,preparationCost,mechanicalAssemblyCost,panelWiringCost,electricalWiringOnBoardTheMachine,electricalDesignCost,mechanicalDesignCost]);
+  }, [totalProduct,materialTotalCost,customTotalCost,revenuePercentage,rechargePercentage,preparationCost,mechanicalAssemblyCost,electricalWiringOnBoardTheMachine,electricalDesignCost,mechanicalDesignCost,electricalPanelCost,totalCustomProduct,testingTotalCost]);
   
   let productsOptions = []
 
@@ -162,7 +206,14 @@ const CustomReactTable = () => {
   
   let productsKitsOptions = []
   
-  productsKits.map((singleProductsKit) => productsKitsOptions.push({value: singleProductsKit['@id'], label: singleProductsKit.name}))
+  productsKits.map((singleProductsKit) => {
+    let priceSum = 0
+    singleProductsKit.products.map((singleProduct) => {
+      priceSum = priceSum + products.find((singleProductToFind) => singleProductToFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity
+    })
+    //console.log(products.find((singleProductFind) => singleProductFind['@id'] === singleProductsKit.selectProduct).sellPrice * singleProductsKit.elementsQuantity)
+    productsKitsOptions.push({value: singleProductsKit['@id'], label: singleProductsKit.name + "(" + priceSum + ")"})
+  })
   
   const handleSubmit = async (event) => {
     event.preventDefault()
@@ -178,25 +229,28 @@ const CustomReactTable = () => {
         "mechanicalDesignCost": event.target.mechanicalDesignCost.value,
         "mechanicalDesignTimeCost": event.target.mechanicalDesignTimeCost.value,
         "mechanicalDesignTime": event.target.mechanicalDesignTime.value,
-        "mechanicalDesignCost": event.target.mechanicalDesignCost.value,
         "electricalDesignTimeCost": event.target.electricalDesignTimeCost.value,
         "electricalDesignTime": event.target.electricalDesignTime.value,
         "electricalDesignCost": event.target.electricalDesignCost.value,
         "electricalWiringOnBoardTheMachine": event.target.electricalWiringOnBoardTheMachine.value,
-        "panelWiringCost": event.target.panelWiringCost.value,
+        //"panelWiringCost": event.target.panelWiringCost.value,
         "mechanicalAssemblyCost": event.target.mechanicalAssemblyCost.value,
         "mechanicalAssemblyTimeCost": event.target.mechanicalAssemblyTimeCost.value,
         "mechanicalAssemblyTime": event.target.mechanicalAssemblyTime.value,
-        "mechanicalAssemblyCost": event.target.mechanicalAssemblyCost.value,
         "preparationCost": event.target.preparationCost.value,
         "productsKit": productsKitValue,
         "rechargePercentage": event.target.rechargePercentage.value,
         "revenuePercentage": event.target.revenuePercentage.value,
-        "calculatedPrice": event.target.calculatedPrice.value,
+        "calculatedPrice": calculatedPrice.toString(),
         "price": event.target.price.value,
-        "remoteId": event.target.remoteId.value};
+        "remoteId": event.target.remoteId.value,
+        "electricalPanelCost": event.target.electricalPanelCost.value,
+        "customProduct": customProducts,
+        "testingTime": testingTime,
+        "testingCost": testingCost,
+        "testingTotalCost": testingTotalCost.toString()
+      };
       await dispatch(UpdateOffer(objToSend))
-      dispatch(fetchOffers(1));
     } else {
       const objToSend = {
         "name": event.target.name.value,
@@ -208,33 +262,37 @@ const CustomReactTable = () => {
         "mechanicalDesignCost": event.target.mechanicalDesignCost.value,
         "mechanicalDesignTimeCost": event.target.mechanicalDesignTimeCost.value,
         "mechanicalDesignTime": event.target.mechanicalDesignTime.value,
-        "mechanicalDesignCost": event.target.mechanicalDesignCost.value,
         "electricalDesignTimeCost": event.target.electricalDesignTimeCost.value,
         "electricalDesignTime": event.target.electricalDesignTime.value,
         "electricalDesignCost": event.target.electricalDesignCost.value,
         "electricalWiringOnBoardTheMachine": event.target.electricalWiringOnBoardTheMachine.value,
-        "panelWiringCost": event.target.panelWiringCost.value,
+        //"panelWiringCost": event.target.panelWiringCost.value,
         "mechanicalAssemblyCost": event.target.mechanicalAssemblyCost.value,
         "mechanicalAssemblyTimeCost": event.target.mechanicalAssemblyTimeCost.value,
         "mechanicalAssemblyTime": event.target.mechanicalAssemblyTime.value,
-        "mechanicalAssemblyCost": event.target.mechanicalAssemblyCost.value,
         "preparationCost": event.target.preparationCost.value,
         "productsKit": productsKitValue,
         "rechargePercentage": event.target.rechargePercentage.value,
         "revenuePercentage": event.target.revenuePercentage.value,
-        "calculatedPrice": event.target.calculatedPrice.value,
-        "price": event.target.price.value};
+        "calculatedPrice": calculatedPrice.toString(),
+        "price": event.target.price.value,
+        "electricalPanelCost": event.target.electricalPanelCost.value,
+        "customProduct": customProducts,
+        "testingTime": testingTime,
+        "testingCost": testingCost,
+        "testingTotalCost": testingTotalCost.toString()
+      };
+      console.log("test")
+      console.log(JSON.stringify(objToSend));
       //const newObj = JSON.parse(JSON.stringify(jsonData));
       //newObj.push({name, materialCost, mechanicalDesignCost, electricalDesignCost, electricalWiringOnBoardTheMachine, panelWiringCost, mechanicalAssembly, mechanicalDesignCost, preparationCost, revenuePercentage, price, client, salesAgent});
       await dispatch(AddOffersItem(objToSend))
-      dispatch(fetchOffers(1));
       //setJsonData(newObj);
     }
     setModal(!modal);
   };
 
   const data2 = offers.map((prop, key) => {
-    console.log(prop.productsKitValue)
     let clientText = ""
     clientText = clients.length > 0 && clients.map((singleClient) => { clientText += clients.find((singleContact) => singleContact['@id'] === singleClient) && clients.find((singleContact) => singleContact['@id'] === singleClient).companyName + " " })
     return {
@@ -289,7 +347,7 @@ const CustomReactTable = () => {
       electricalDesignTimeCost: prop.electricalDesignCost,
       electricalDesignCost: prop.electricalDesignCost,
       electricalWiringOnBoardTheMachine: prop.electricalWiringOnBoardTheMachine,
-      panelWiringCost: prop.panelWiringCost,
+      //panelWiringCost: prop.panelWiringCost,
       mechanicalAssemblyCost: prop.mechanicalAssemblyCost,
       mechanicalAssemblyTime: prop.mechanicalAssemblyTime,
       mechanicalAssemblyTimeCost: prop.mechanicalAssemblyTimeCost,
@@ -299,6 +357,11 @@ const CustomReactTable = () => {
       calculatedPrice: prop.calculatedPrice,
       remoteId: prop.remoteId ? prop.remoteId : prop['@id'],
       productsKitValue: prop.productsKit,
+      electricalPanelCost: prop.electricalPanelCost,
+      customProducts: prop.customProduct,
+      testingCost: prop.testingCost,
+      testingTime: prop.testingTime,
+      testingTotalCost: prop.testingTotalCost,
       actions: (
         // we've added some custom button actions
         <div className="text-center">
@@ -306,6 +369,7 @@ const CustomReactTable = () => {
           <Button
             onClick={() => {
               const sobj = data2.find((o) => o.id === key);
+              console.log(sobj)
               setModal(!modal);
               setObj(sobj);
               setMechanicalDesignCost(sobj.mechanicalDesignCost);
@@ -320,12 +384,18 @@ const CustomReactTable = () => {
               setMechanicalAssemblyTime(sobj.mechanicalAssemblyTime);
               setMechanicalAssemblyTimeCost(sobj.mechanicalAssemblyTimeCost);
               setElectricalWiringOnBoardTheMachine(sobj.electricalWiringOnBoardTheMachine);
-              setPanelWiringCost(sobj.panelWiringCost);
+              //setPanelWiringCost(sobj.panelWiringCost);
               setRevenuePercentage(sobj.revenuePercentage);
               setPreparationCost(sobj.preparationCost);
               setRechargePercentage(sobj.rechargePercentage);
               setCalculatedPrice(sobj.calculatedPrice);
               setProductsKitValue(sobj.productsKitValue);
+              setElectricalPanelCost(sobj.electricalPanelCost);
+              setCustomProducts(sobj.customProducts);
+              setTestingCost(sobj.testingCost);
+              setTestingTime(sobj.testingTime);
+              setTestingTotalCost(sobj.testingTotalCost);
+              
             }}
             color="primary"
             size="sm"
@@ -458,7 +528,7 @@ const CustomReactTable = () => {
             </FormGroup>
             <Label >Aggiungi materiale</Label>
             <br/>
-            {productElements.map((element, index) => (
+            {productElements && productElements.map((element, index) => (
             <FormGroup key={index}>
               <Label for="product">Prodotto</Label>
               <Input
@@ -485,9 +555,45 @@ const CustomReactTable = () => {
             <Button color="primary" type="button" onClick={handleAddElementProduct}>Aggiungi elemento</Button>
             <br/>
             <br/>
+            <Label >Aggiungi prodotto personalizzato</Label>
+            <br/>
+            {customProducts && customProducts.map((element, index) => (
+            <FormGroup key={index}>
+              <Label for="customProduct">Prodotto personalizzato</Label>
+              <Input
+                type="text"
+                name="customProduct"
+                id="customProduct"
+                value={element.customProduct}
+                onChange={(event) => handleChangeCustomProducts(event, index)}
+              />
+              <br/>
+              <Label for="customQuantity">Quantità</Label>
+              <Input
+                type="number"
+                name="customQuantity"
+                id="customQuantity"
+                value={element.customQuantity}
+                onChange={(event) => handleChangeCustomProducts(event, index)}
+              />
+              <br/>
+              <Label for="customPrice">Prezzo personalizzato</Label>
+              <Input
+                type="text"
+                name="customPrice"
+                id="customPrice"
+                value={element.customPrice}
+                onChange={(event) => handleChangeCustomProducts(event, index)}
+              />
+              <br/>
+              <Button color="danger" type="button" onClick={removeElementCustomProduct}>Rimuovi elemento personalizzato</Button>
+            </FormGroup>))}
+            <Button color="primary" type="button" onClick={handleAddElementCustomProduct}>Aggiungi elemento personalizzato</Button>
+            <br/>
+            <br/>
             <FormGroup>
               <Label for="materialTotalCost">Costo totale materiale</Label>
-              <Input type="number" name="materialTotalCost" id="materialTotalCost" value={(customTotalCost !== "" ? parseInt(materialTotalCost) + parseInt(customTotalCost) : parseInt(materialTotalCost)) + (parseInt(totalProduct))} />
+              <Input type="number" name="materialTotalCost" id="materialTotalCost" value={(customTotalCost !== "" ? parseInt(totalCustomProduct) + parseInt(materialTotalCost) + parseInt(customTotalCost) : parseInt(totalCustomProduct) + parseInt(materialTotalCost)) + (parseInt(totalProduct))} />
             </FormGroup>
             <FormGroup>
               <Label for="mechanicalDesignCost">Costo disegno meccanico</Label>
@@ -553,13 +659,42 @@ const CustomReactTable = () => {
               <Input type="text" value={electricalDesignCost} name="electricalDesignCost" id="electricalDesignCost" defaultValue={obj !== null ? obj.electricalDesignCost : ""} />
             </FormGroup>
             <FormGroup>
+              <Label for="testCost">Costo collaudo</Label>
+            </FormGroup>
+            <FormGroup>
+              <Label for="testingCost">Costo orario</Label>
+              <Input
+                type="number"
+                name="testingCost"
+                id="testingCost"
+                value={testingCost}
+                onChange={(e) => e.target.value !== "" ? setTestingCost(e.target.value) : setTestingCost(0)}
+                defaultValue={obj !== null ? obj.testingCost : ""}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="testingTime">Numero di ore</Label>
+              <Input
+                type="number"
+                name="testingTime"
+                id="testingTime"
+                value={testingTime}
+                onChange={(e) => e.target.value !== "" ? setTestingTime(e.target.value) : setTestingTime(0)}
+                defaultValue={obj !== null ? obj.testingTime : ""}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Label for="testingTotalCost">Costo totale collaudo</Label>
+              <Input type="text" value={testingTotalCost} name="testingTotalCost" id="testingTotalCost" defaultValue={obj !== null ? obj.testingTotalCost : ""} />
+            </FormGroup>
+            <FormGroup>
               <Label for="electricalWiringOnBoardTheMachine">Cablaggio elettrico a bordo macchina</Label>
               <Input onChange={(e) => setElectricalWiringOnBoardTheMachine(e.target.value)} value={electricalWiringOnBoardTheMachine} type="text" name="electricalWiringOnBoardTheMachine" id="electricalWiringOnBoardTheMachine" defaultValue={obj !== null ? obj.electricalWiringOnBoardTheMachine : ""} />
             </FormGroup>
-            <FormGroup>
+            {/*<FormGroup>
               <Label for="panelWiringCost">Costo cavi pannello</Label>
               <Input onChange={(e) => setPanelWiringCost(e.target.value)} value={panelWiringCost} type="text" name="panelWiringCost" id="panelWiringCost" defaultValue={obj !== null ? obj.panelWiringCost : ""} />
-            </FormGroup>
+            </FormGroup>*/}
             <FormGroup>
               <Label for="mechanicalAssemblyCost">Costo assemblaggio meccanico</Label>
             </FormGroup>
@@ -594,16 +729,36 @@ const CustomReactTable = () => {
               <Input type="number" onChange={(e) => setPreparationCost(e.target.value)} value={preparationCost} name="preparationCost" id="preparationCost" defaultValue={obj !== null ? obj.preparationCost : ""} />
             </FormGroup>
             <FormGroup>
+              <Label for="electricalPanelCost">Costo pannello elettrico</Label>
+              <Input type="string" onChange={(e) => setElectricalPanelCost(e.target.value)} value={electricalPanelCost} name="electricalPanelCost" id="electricalPanelCost" defaultValue={obj !== null ? obj.electricalPanelCost : ""} />
+            </FormGroup>
+            <FormGroup>
+              <Label >Costo calcolato base</Label>
+            </FormGroup>
+            <FormGroup>
+              <Label >{firstPrice}</Label>
+            </FormGroup>
+            <FormGroup>
               <Label for="rechargePercentage">Percentuale ricarico</Label>
+            </FormGroup>
+            <FormGroup>
               <Input value={rechargePercentage} onChange={(e) => setRechargePercentage(e.target.value)} type="number" name="rechargePercentage" id="rechargePercentage" defaultValue={obj !== null ? obj.rechargePercentage : ""} />
+            </FormGroup>
+            <FormGroup>
+              <Label >Prezzo originale</Label>
+            </FormGroup>
+            <FormGroup>
+              <Label >{secondPrice}</Label>
             </FormGroup>
             <FormGroup>
               <Label for="revenuePercentage">Percentuale sconto</Label>
               <Input value={revenuePercentage} onChange={(e) => setRevenuePercentage(e.target.value)} type="number" name="revenuePercentage" id="revenuePercentage" defaultValue={obj !== null ? obj.revenuePercentage : ""} />
             </FormGroup>
             <FormGroup>
-              <Label for="calculatedPrice">Prezzo calcolato</Label>
-              <Input value={calculatedPrice} type="text" name="calculatedPrice" id="calculatedPrice" defaultValue={obj !== null ? obj.calculatedPrice : ""} />
+              <Label for="calculatedPrice">Prezzo scontato</Label>
+            </FormGroup>
+            <FormGroup>
+              {calculatedPrice}
             </FormGroup>
             <FormGroup>
               <Label for="price">Prezzo</Label>
