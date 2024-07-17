@@ -83,9 +83,11 @@ const CustomReactTable = () => {
   const [electricalPanelCost, setElectricalPanelCost] = useState(0);
   const [customProducts, setCustomProducts] = useState([]);
   const [totalCustomProduct, setTotalCustomProduct] = useState(0);
+  const [creditLimit, setCreditLimit] = useState("");
 
   const toggle = () => {
     setModal(!modal);
+    setCreditLimit("");
   };
   
   const dispatch = useDispatch();
@@ -487,6 +489,7 @@ const CustomReactTable = () => {
                 id="client"
                 name="client"
                 type="select"
+                onChange={(e) => { let creditLimit = clients.find((singleClient) => singleClient['@id'] === e.target.value).creditLimit; creditLimit ? setCreditLimit(parseInt(creditLimit)) : setCreditLimit("") }}
               >
                 <option>Scegli un cliente...</option>
                 {clients.map((singleClient => obj !== null && obj.clientId === singleClient['@id'] ? <option selected key={singleClient['@id']} value={singleClient['@id']}>{singleClient.companyName}</option> : <option key={singleClient['@id']} value={singleClient['@id']}>{singleClient.companyName}</option>))}
@@ -760,6 +763,11 @@ const CustomReactTable = () => {
             <FormGroup>
               {calculatedPrice}
             </FormGroup>
+            
+            <FormGroup>
+              {creditLimit !== "" && parseInt(calculatedPrice) > parseInt(creditLimit) && <span style={{color: 'red'}}>Attenzione! Superato limite di credito!</span>}
+            </FormGroup>
+
             <FormGroup>
               <Label for="price">Prezzo</Label>
               <Input type="text" name="price" id="price" defaultValue={obj !== null ? obj.price : ""} />

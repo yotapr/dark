@@ -93,6 +93,13 @@ const SidebarData = [
     collapisble: false,
   },
   {
+    title: "Storico Ordini",
+    href: "/apps/historyOrders",
+    icon: <Icon.ShoppingCart />,
+    id: 2.6,
+    collapisble: false,
+  },
+  {
     title: "Magazzino",
     href: "/apps/products",
     icon: <Icon.File />,

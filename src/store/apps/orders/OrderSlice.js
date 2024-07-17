@@ -108,7 +108,7 @@ export const OrderSlice = createSlice({
     },
     setPageData: {
       reducer: (state, action) => {
-        state.totalPage = action.payload.pageData["hydra:last"].match(/(\d+)/)[0]
+        action.payload.pageData["hydra:last"] ? state.totalPage = action.payload.pageData["hydra:last"].match(/(\d+)/)[0] : state.totalPage = 1
         //state.salesAgents.push(action.payload);
       },
       prepare: (
@@ -168,7 +168,17 @@ export const AddOrdersItem = (payload) => async (dispatch) => {
 
 export const fetchOrders = (page) => async (dispatch) => {
   try {
-    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/order_products?page=' + page);
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/order_products?page=' + page );
+    dispatch(getOrders(response.data['hydra:member']));
+    response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+export const fetchOrdersDelivered = (page) => async (dispatch) => {
+  try {
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/order_products?page=' + page  + '&delivered=true');
     dispatch(getOrders(response.data['hydra:member']));
     response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
   } catch (err) {
