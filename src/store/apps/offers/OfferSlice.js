@@ -222,7 +222,7 @@ export const AddOffersItem = (payload) => async (dispatch) => {
       }
     })
     //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
-    /*dispatch(addOffer(
+    dispatch(addOffer(
         payload.name,
         payload.client,
         payload.salesAgent,
@@ -246,7 +246,7 @@ export const AddOffersItem = (payload) => async (dispatch) => {
         payload.price,
         payload.preparationCost,
         payload.revenuePercentage,
-        value.data['@id']));*/
+        value.data['@id']));
   } catch (err) {
     throw new Error(err);
   }

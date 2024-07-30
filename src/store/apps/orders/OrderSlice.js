@@ -168,7 +168,7 @@ export const AddOrdersItem = (payload) => async (dispatch) => {
 
 export const fetchOrders = (page) => async (dispatch) => {
   try {
-    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/order_products?page=' + page );
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/order_products?page=' + page  + '&delivered=false' );
     dispatch(getOrders(response.data['hydra:member']));
     response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
   } catch (err) {

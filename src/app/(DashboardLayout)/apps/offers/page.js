@@ -210,8 +210,9 @@ const CustomReactTable = () => {
   
   productsKits.map((singleProductsKit) => {
     let priceSum = 0
+    console.log(products.find)
     singleProductsKit.products.map((singleProduct) => {
-      priceSum = priceSum + products.find((singleProductToFind) => singleProductToFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity
+      products.find((singleProductToFind) => singleProductToFind['@id'] === singleProduct.selectProduct) && (priceSum = priceSum + products.find((singleProductToFind) => singleProductToFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity)
     })
     //console.log(products.find((singleProductFind) => singleProductFind['@id'] === singleProductsKit.selectProduct).sellPrice * singleProductsKit.elementsQuantity)
     productsKitsOptions.push({value: singleProductsKit['@id'], label: singleProductsKit.name + "(" + priceSum + ")"})
@@ -248,8 +249,8 @@ const CustomReactTable = () => {
         "remoteId": event.target.remoteId.value,
         "electricalPanelCost": event.target.electricalPanelCost.value,
         "customProduct": customProducts,
-        "testingTime": testingTime,
-        "testingCost": testingCost,
+        "testingTime": testingTime.toString(),
+        "testingCost": testingCost.toString(),
         "testingTotalCost": testingTotalCost.toString()
       };
       await dispatch(UpdateOffer(objToSend))
@@ -280,8 +281,8 @@ const CustomReactTable = () => {
         "price": event.target.price.value,
         "electricalPanelCost": event.target.electricalPanelCost.value,
         "customProduct": customProducts,
-        "testingTime": testingTime,
-        "testingCost": testingCost,
+        "testingTime": testingTime.toString(),
+        "testingCost": testingCost.toString(),
         "testingTotalCost": testingTotalCost.toString()
       };
       console.log("test")
