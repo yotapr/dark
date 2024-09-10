@@ -52,21 +52,22 @@ export const OfferSlice = createSlice({
         electricalDesignTime,
         electricalDesignCost,
         electricalWiringOnBoardTheMachine,
-        //panelWiringCost,
+        panelWiringCost,
         mechanicalAssemblyCost,
         mechanicalAssemblyTimeCost,
         mechanicalAssemblyTime,
+        preparationCost,
         productsKit,
         rechargePercentage,
         calculatedPrice,
         price,
-        preparationCost,
         revenuePercentage,
         electricalPanelCost,
+        customProduct,
         testingTime,
         testingCost,
         testingTotalCost,
-        id
+        remoteId
       ) => {
         return {
           payload: {
@@ -83,21 +84,22 @@ export const OfferSlice = createSlice({
             electricalDesignTime,
             electricalDesignCost,
             electricalWiringOnBoardTheMachine,
-            //panelWiringCost,
+            panelWiringCost,
             mechanicalAssemblyCost,
             mechanicalAssemblyTimeCost,
             mechanicalAssemblyTime,
+            preparationCost,
             productsKit,
             rechargePercentage,
             calculatedPrice,
             price,
-            preparationCost,
             revenuePercentage,
             electricalPanelCost,
+            customProduct,
             testingTime,
             testingCost,
             testingTotalCost,
-            id
+            remoteId
           },
         };
       },
@@ -121,7 +123,7 @@ export const OfferSlice = createSlice({
         electricalDesignTime,
         electricalDesignCost,
         electricalWiringOnBoardTheMachine,
-        //panelWiringCost,
+        panelWiringCost,
         mechanicalAssemblyCost,
         mechanicalAssemblyTimeCost,
         mechanicalAssemblyTime,
@@ -132,6 +134,7 @@ export const OfferSlice = createSlice({
         preparationCost,
         revenuePercentage,
         electricalPanelCost,
+        customProduct,
         testingTime,
         testingCost,
         testingTotalCost,
@@ -152,7 +155,7 @@ export const OfferSlice = createSlice({
             electricalDesignTime,
             electricalDesignCost,
             electricalWiringOnBoardTheMachine,
-            //panelWiringCost,
+            panelWiringCost,
             mechanicalAssemblyCost,
             mechanicalAssemblyTimeCost,
             mechanicalAssemblyTime,
@@ -163,6 +166,7 @@ export const OfferSlice = createSlice({
             preparationCost,
             revenuePercentage,
             electricalPanelCost,
+            customProduct,
             testingTime,
             testingCost,
             testingTotalCost,
@@ -207,6 +211,38 @@ export const UpdateOffer = (payload) => async (dispatch) => {
         'Content-Type': 'application/merge-patch+json',
       }
     })
+    dispatch(addOffer(
+      //"panelWiringCost": event.target.panelWiringCost.value,
+      payload.name,
+      payload.client,
+      payload.salesAgent,
+      payload.customTotalCost,
+      payload.productElements,
+      payload.materialTotalCost,
+      payload.mechanicalDesignCost,
+      payload.mechanicalDesignTimeCost,
+      payload.mechanicalDesignTime,
+      payload.electricalDesignTimeCost,
+      payload.electricalDesignTime,
+      payload.electricalDesignCost,
+      payload.electricalWiringOnBoardTheMachine,
+      payload.panelWiringCost,
+      payload.mechanicalAssemblyCost,
+      payload.mechanicalAssemblyTimeCost,
+      payload.mechanicalAssemblyTime,
+      payload.preparationCost,
+      payload.productsKit,
+      payload.rechargePercentage,
+      payload.calculatedPrice,
+      payload.price,
+      payload.preparationCost,
+      payload.revenuePercentage,
+      payload.electricalPanelCost,
+      payload.customProduct,
+      payload.testingTime,
+      payload.testingCost,
+      payload.testingTotalCost,
+      payload.remoteId));
     //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
     //dispatch(SetOffer(payload.price,payload.materialCost,payload.mechanicalDesignCost,payload.electricalDesignCost,payload.electricalWiringOnBoardTheMachine,payload.panelWiringCost,payload.mechanicalAssembly,payload.preparationCost,payload.revenuePercentage,payload.name,payload.client,payload.salesAgent,payload.id,payload.remoteId));
   } catch (err) {
@@ -221,8 +257,11 @@ export const AddOffersItem = (payload) => async (dispatch) => {
         'Content-Type': 'application/ld+json',
       }
     })
+    console.log(payload)
+    console.log(value.data)
     //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
     dispatch(addOffer(
+        //"panelWiringCost": event.target.panelWiringCost.value,
         payload.name,
         payload.client,
         payload.salesAgent,
@@ -240,12 +279,18 @@ export const AddOffersItem = (payload) => async (dispatch) => {
         payload.mechanicalAssemblyCost,
         payload.mechanicalAssemblyTimeCost,
         payload.mechanicalAssemblyTime,
+        payload.preparationCost,
         payload.productsKit,
         payload.rechargePercentage,
         payload.calculatedPrice,
         payload.price,
         payload.preparationCost,
         payload.revenuePercentage,
+        payload.electricalPanelCost,
+        payload.customProduct,
+        payload.testingTime,
+        payload.testingCost,
+        payload.testingTotalCost,
         value.data['@id']));
   } catch (err) {
     throw new Error(err);

@@ -148,7 +148,12 @@ const ContactDetails = () => {
                     <td>
                       <Button
                         color="primary"
-                        onClick={() => { const remoteId = contactDetail['@id'] ? contactDetail['@id'] : contactDetail.remoteId; setContactDetailEdit({...contactDetail, id: contactContent, remoteId: remoteId}); dispatch(isEdit()) }}
+                        onClick={() => { 
+                            console.log(contactDetail['@id'] ? contactDetail['@id'] : contactDetail.remoteId);
+                            const remoteId = contactDetail['@id'] ? contactDetail['@id'] : contactDetail.remoteId; 
+                            setContactDetailEdit({...contactDetail, id: contactContent, remoteId: remoteId}); 
+                            dispatch(isEdit()) 
+                          }}
                       >
                         Modifica Fornitore
                       </Button>
@@ -391,7 +396,8 @@ const ContactDetails = () => {
                       <td>
                         <Button
                           color="success"
-                          onClick={() => { setEditDate(false); dispatch(UpdateContact(contactDetailEdit)); dispatch(isEdit())}}
+                          onClick={() => { setEditDate(false); dispatch(UpdateContact(contactDetailEdit)); dispatch(isEdit())
+                          }}
                         >
                           Salva Contatto
                         </Button>

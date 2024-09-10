@@ -132,11 +132,20 @@ const CustomReactTable = () => {
   const handleChangeCustomProducts = async (event, index) => {
     const newElements = [...customProducts];
     if (event.target.name === 'customProduct') {
-      newElements[index].customProduct = event.target.value;
+      newElements[index] = {
+        ...newElements[index],
+        customProduct: event.target.value,
+      };
     } else if (event.target.name === 'customQuantity') {
-      newElements[index].customQuantity = parseInt(event.target.value);
+      newElements[index] = {
+        ...newElements[index],
+        customQuantity: parseInt(event.target.value),
+      };
     } else {
-      newElements[index].customPrice = parseInt(event.target.value);
+      newElements[index] = {
+        ...newElements[index],
+        customPrice: parseInt(event.target.value),
+      };
     }
     setCustomProducts(newElements);
     let sum = 0;
@@ -163,14 +172,27 @@ const CustomReactTable = () => {
   const handleChangeProducts = async (event, index) => {
     const newElements = [...productElements];
     if (event.target.name === 'selectProduct') {
-      newElements[index].selectProduct = event.target.value;
+      newElements[index] = {
+        ...newElements[index],
+        selectProduct: event.target.value,
+      };
     } else {
-      newElements[index].elementsQuantity = parseInt(event.target.value);
+      newElements[index] = {
+        ...newElements[index],
+        elementsQuantity: parseInt(event.target.value),
+      };
     }
-    if (newElements[index].selectProduct && newElements[index].elementsQuantity) newElements[index].totalPrice = products.find((singleProduct) => singleProduct['@id'] === newElements[index].selectProduct).sellPrice * newElements[index].elementsQuantity;
+    if (newElements[index].selectProduct && newElements[index].elementsQuantity) 
+      newElements[index] = {
+        ...newElements[index],
+        totalPrice: products.find((singleProduct) => singleProduct['@id'] === newElements[index].selectProduct).sellPrice * newElements[index].elementsQuantity
+      };
     setProductElements(newElements);
     let sum = 0;
-    await productElements.map((singleProductElement) => sum = sum + singleProductElement.totalPrice);
+    await productElements.map((singleProductElement) => {
+      if (newElements[index].selectProduct && newElements[index].elementsQuantity) sum = sum + (products.find((singleProduct) => singleProduct['@id'] === newElements[index].selectProduct).sellPrice * newElements[index].elementsQuantity);
+        else sum = sum + singleProductElement.totalPrice
+    });
     setTotalProduct(sum);
   };
 
@@ -285,8 +307,8 @@ const CustomReactTable = () => {
         "testingCost": testingCost.toString(),
         "testingTotalCost": testingTotalCost.toString()
       };
-      console.log("test")
-      console.log(JSON.stringify(objToSend));
+      //console.log("test")
+      //console.log(JSON.stringify(objToSend));
       //const newObj = JSON.parse(JSON.stringify(jsonData));
       //newObj.push({name, materialCost, mechanicalDesignCost, electricalDesignCost, electricalWiringOnBoardTheMachine, panelWiringCost, mechanicalAssembly, mechanicalDesignCost, preparationCost, revenuePercentage, price, client, salesAgent});
       await dispatch(AddOffersItem(objToSend))
@@ -297,6 +319,7 @@ const CustomReactTable = () => {
 
   const data2 = offers.map((prop, key) => {
     let clientText = ""
+    console.log(prop)
     clientText = clients.length > 0 && clients.map((singleClient) => { clientText += clients.find((singleContact) => singleContact['@id'] === singleClient) && clients.find((singleContact) => singleContact['@id'] === singleClient).companyName + " " })
     return {
 
@@ -355,7 +378,7 @@ const CustomReactTable = () => {
       mechanicalAssemblyTime: prop.mechanicalAssemblyTime,
       mechanicalAssemblyTimeCost: prop.mechanicalAssemblyTimeCost,
       preparationCost: prop.preparationCost,
-      revenuePercentage: prop.preparationCost,
+      revenuePercentage: prop.revenuePercentage,
       rechargePercentage: prop.rechargePercentage,
       calculatedPrice: prop.calculatedPrice,
       remoteId: prop.remoteId ? prop.remoteId : prop['@id'],
@@ -376,8 +399,8 @@ const CustomReactTable = () => {
               setModal(!modal);
               setObj(sobj);
               setMechanicalDesignCost(sobj.mechanicalDesignCost);
-              setMechanicalDesignTimeCost(sobj.mechanicalDesignCost);
-              setMechanicalDesignTime(sobj.mechanicalDesignCost);
+              setMechanicalDesignTimeCost(sobj.mechanicalDesignTimeCost);
+              setMechanicalDesignTime(sobj.mechanicalDesignTime);
               setCustomTotalCost(sobj.customTotalCost);
               setProductElements(sobj.productElements);
               setElectricalDesignCost(sobj.electricalDesignCost);
@@ -398,7 +421,11 @@ const CustomReactTable = () => {
               setTestingCost(sobj.testingCost);
               setTestingTime(sobj.testingTime);
               setTestingTotalCost(sobj.testingTotalCost);
-              
+              let totalCost = 0;
+              if (sobj.productsKitValue) {
+                sobj.productsKitValue.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCost = totalCost + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity));
+                setMaterialTotalCost(totalCost);
+              }
             }}
             color="primary"
             size="sm"

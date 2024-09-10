@@ -94,21 +94,25 @@ const CustomReactTable = () => {
 
   const handleChangeProducts = (event, index) => {
     const newElements = [...productElements];
+    const updatedObject = { ...newElements[index] };
     if (event.target.name === 'selectProduct') {
-      newElements[index].selectProduct = event.target.value;
+      updatedObject.selectProduct = event.target.value;
     } else {
-      newElements[index].elementsQuantity = parseInt(event.target.value);
+      updatedObject.elementsQuantity = parseInt(event.target.value);
     }
+    newElements[index] = updatedObject;
     setProductElements(newElements);
   };
   
   const handleSubmitKit = (event) => {
     event.preventDefault()
-    dispatch(AddProductsKitItem({"name": event.target.name.value, "products": productElements}))
+    if (event.target.remoteId.value !== undefined) dispatch(UpdateProductsKit({"name": event.target.name.value, "products": productElements, "remoteId": event.target.remoteId.value, "id": event.target.id.value}))
+    setModalKit(!modalKit);
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    console.log(event)
     if (event.target.id.value !== undefined) {
       const id = event.target.id.value;
       const productId = event.target.productId.value;

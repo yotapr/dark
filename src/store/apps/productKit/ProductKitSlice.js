@@ -34,7 +34,6 @@ export const ProductKitSlice = createSlice({
     },
     SetProductsKit: {
       reducer: (state, action) => {
-        console.log(action.payload)
         state.productsKits[parseInt(action.payload.id)] = action.payload
         //state.salesAgents = action.payload
       },
@@ -111,7 +110,7 @@ export const UpdateProductsKit = (payload) => async (dispatch) => {
       }
     })
     //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
-    dispatch(SetProductsKit(payload.name,payload.products,value.data['@id']));
+    dispatch(SetProductsKit(payload.id,payload.name,payload.products,value.data['@id']));
   } catch (err) {
     throw new Error(err);
   }
