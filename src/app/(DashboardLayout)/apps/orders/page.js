@@ -109,6 +109,7 @@ const CustomReactTable = () => {
     let sum = 0;
     await event.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity)); 
     await productElements.map((singleProductElement) => sum = sum + singleProductElement.totalPrice);
+    console.log(event)
     setProductsKitValue(event);
     sum = sum + totalCostTemp;
     setTotalCost(sum);
@@ -229,6 +230,7 @@ const CustomReactTable = () => {
               const sobj = data2.find((o) => o.id === key);
               setModal(!modal);
               setObj(sobj);
+              console.log(sobj);
               setProductElements(sobj.productElements);
               setProductsKitValue(sobj.productsKitValue);
               setTotalCost(parseInt(sobj.totalProduct))

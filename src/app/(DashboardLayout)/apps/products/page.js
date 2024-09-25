@@ -106,7 +106,8 @@ const CustomReactTable = () => {
   
   const handleSubmitKit = (event) => {
     event.preventDefault()
-    if (event.target.remoteId.value !== undefined) dispatch(UpdateProductsKit({"name": event.target.name.value, "products": productElements, "remoteId": event.target.remoteId.value, "id": event.target.id.value}))
+    if (event.target.remoteId !== undefined) dispatch(UpdateProductsKit({"name": event.target.name.value, "products": productElements, "remoteId": event.target.remoteId.value, "id": event.target.id.value}))
+      else dispatch(AddProductsKitItem({"name": event.target.name.value, "products": productElements, "id": event.target.id.value}))
     setModalKit(!modalKit);
   }
 

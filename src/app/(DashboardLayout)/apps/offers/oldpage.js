@@ -80,7 +80,6 @@ const CustomReactTable = () => {
   const [firstPrice,setFirstPrice] = useState(0);
   const [secondPrice,setSecondPrice] = useState(0);
   const [productsKitValue,setProductsKitValue] = useState(null);
-  const [productsKitPrice,setProductsKitPrice] = useState(0);
   const [electricalPanelCost, setElectricalPanelCost] = useState(0);
   const [customProducts, setCustomProducts] = useState([]);
   const [totalCustomProduct, setTotalCustomProduct] = useState(0);
@@ -214,37 +213,17 @@ const CustomReactTable = () => {
   }, [mechanicalAssemblyTimeCost,mechanicalAssemblyTime]);
 
   useEffect(() => {
-    let priceToAdd = 0;
-    // aggiungo costo del materiale
-    if (customTotalCost !== "") priceToAdd = priceToAdd + parseInt(customTotalCost);
-    // aggiungo costo dei kit
-    priceToAdd = priceToAdd + parseInt(productsKitPrice);
-    // aggiungo costo dei prodotti custom
-    priceToAdd = priceToAdd + parseInt(totalCustomProduct);
-    // aggiungo costo dei prodotti "singoli"
-    priceToAdd = priceToAdd + parseInt(totalProduct);
-    // aggiungo costo totale materiale
-    setMaterialTotalCost(priceToAdd);
-    // aggiungo costo di preparazione
-    priceToAdd = priceToAdd + parseInt(preparationCost);
-    // aggiungo costo assemblaggio meccanico
-    priceToAdd = priceToAdd + parseInt(mechanicalAssemblyCost);
-    // aggiungo costo cablaggio elettrico
-    priceToAdd = priceToAdd + parseInt(electricalWiringOnBoardTheMachine);
-    // aggiungo costo disegno elettrico
-    priceToAdd = priceToAdd + parseInt(electricalDesignCost);
-    // aggiungo costo disegno meccanico
-    priceToAdd = priceToAdd + parseInt(mechanicalDesignCost);
-    // aggiungo costo pannello elettrico
-    priceToAdd = priceToAdd + parseInt(electricalPanelCost);
-    // aggiungo costo collaudo
-    priceToAdd = priceToAdd + parseInt(testingTotalCost);
+    //let priceToAdd = (customTotalCost !== "" ? parseInt(materialCost) + parseInt(customTotalCost) : parseInt(materialTotalCost)) + (parseInt(totalProduct))
+    let priceToAdd = parseInt(materialTotalCost);
+    if (priceToAdd === NaN) priceToAdd = 0;
+    console.log(priceToAdd)
+    priceToAdd = priceToAdd + parseInt(preparationCost) + parseInt(mechanicalAssemblyCost) + parseInt(electricalDesignCost) + parseInt(mechanicalDesignCost) + parseInt(electricalWiringOnBoardTheMachine) + parseInt(electricalPanelCost) + parseInt(totalCustomProduct) + parseInt(testingTotalCost);
     setFirstPrice(priceToAdd);
-    if (parseInt(rechargePercentage) > 0) priceToAdd = priceToAdd + (priceToAdd / 100 * parseInt(rechargePercentage));
+    priceToAdd = priceToAdd + (priceToAdd / 100 * parseInt(rechargePercentage));
     setSecondPrice(priceToAdd);
-    if (parseInt(revenuePercentage) > 0) priceToAdd = priceToAdd - (priceToAdd / 100 * parseInt(revenuePercentage));
-    setCalculatedPrice(priceToAdd);
-  }, [productsKitPrice,totalCustomProduct,customTotalCost,totalProduct,materialTotalCost,revenuePercentage,rechargePercentage,preparationCost,mechanicalAssemblyCost,electricalWiringOnBoardTheMachine,electricalDesignCost,mechanicalDesignCost,electricalPanelCost,testingTotalCost]);
+    priceToAdd = priceToAdd - (priceToAdd / 100 * parseInt(revenuePercentage));
+    setCalculatedPrice(priceToAdd); 
+  }, [totalProduct,materialTotalCost,customTotalCost,revenuePercentage,rechargePercentage,preparationCost,mechanicalAssemblyCost,electricalWiringOnBoardTheMachine,electricalDesignCost,mechanicalDesignCost,electricalPanelCost,totalCustomProduct,testingTotalCost]);
   
   let productsOptions = []
 
@@ -447,10 +426,7 @@ const CustomReactTable = () => {
               setTestingTotalCost(sobj.testingTotalCost);
               let totalCost = 0;
               if (sobj.productsKitValue) sobj.productsKitValue.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCost = totalCost + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity));
-              setProductsKitPrice(totalCost);              
-              let totalCostCustomProducts = 0;
-              if (sobj.customProducts) sobj.customProducts.map((singleCustomProduct) => totalCostCustomProducts = totalCostCustomProducts + singleCustomProduct.customPrice);
-              setTotalCustomProduct(totalCostCustomProducts);
+              setMaterialTotalCost(sobj.materialTotalCost);
             }}
             color="primary"
             size="sm"
@@ -579,13 +555,7 @@ const CustomReactTable = () => {
                 name="productsKit"
                 id="productsKit"
                 value={productsKitValue}
-                onChange={(e) => { 
-                  let totalKitCost = 0; 
-                  e.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalKitCost = totalKitCost + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity)); 
-                  alert("total cost " + totalKitCost)
-                  setProductsKitPrice(totalKitCost); 
-                  setProductsKitValue(e)
-                }}
+                onChange={(e) => { let totalCost = 0; e.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCost = totalCost + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity)); setMaterialTotalCost(totalCost); setProductsKitValue(e)}}
               />
             </FormGroup>
             <Label >Aggiungi materiale</Label>

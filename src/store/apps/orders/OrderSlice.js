@@ -86,8 +86,8 @@ export const OrderSlice = createSlice({
         color,
         note,
         productElements,
-        productsKitValue,
-        totalProduct,
+        productsKits,
+        totalCost,
         remoteId
       ) => {
         return {
@@ -99,8 +99,8 @@ export const OrderSlice = createSlice({
             color,
             note,
             productElements,
-            productsKitValue,
-            totalProduct,
+            productsKits,
+            totalCost,
             remoteId
           },
         };
@@ -152,6 +152,7 @@ export const UpdateOrder = (payload) => async (dispatch) => {
 };
 
 export const AddOrdersItem = (payload) => async (dispatch) => {
+  payload.delivered = false;
   try {
     const value = await axios.post('https://awtapi.softwarehouseparma.net/api/order_products', payload, {
       headers: {
@@ -160,7 +161,7 @@ export const AddOrdersItem = (payload) => async (dispatch) => {
     })
     console.log(value.data['@id'])
     //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
-    dispatch(addOrder(payload.provider,payload.orderDate,payload.deliveryDate,payload.realDeliveryDate,payload.color,payload.note,payload.productElements,{"productsKitValue": payload.productsKits},payload.totalProduct,value.data['@id']));
+    dispatch(addOrder(payload.provider,payload.orderDate,payload.deliveryDate,payload.realDeliveryDate,payload.color,payload.note,payload.productElements,payload.productsKits,payload.totalCost,value.data['@id']));
   } catch (err) {
     throw new Error(err);
   }
