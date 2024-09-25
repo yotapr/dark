@@ -100,14 +100,14 @@ const CustomReactTable = () => {
     let sum = 0;
     let totalCostTemp = 0;
     await newElements.map((singleProductElement) => sum = sum + singleProductElement.totalPrice);
-    productsKitValue.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity));
+    productsKitValue.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).purchasePrice * singleProduct.elementsQuantity));
     sum = sum + totalCostTemp;
     setTotalCost(sum);
   };
   const handleChangeKit = async (event) => {
     let totalCostTemp = 0;
     let sum = 0;
-    await event.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity)); 
+    await event.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).purchasePrice * singleProduct.elementsQuantity)); 
     await productElements.map((singleProductElement) => sum = sum + singleProductElement.totalPrice);
     console.log(event)
     setProductsKitValue(event);
@@ -131,7 +131,7 @@ const CustomReactTable = () => {
     let sum = 0;
     let totalCostTemp = 0;
     await newElements.map((singleProductElement) => sum = sum + singleProductElement.totalPrice);
-    productsKitValue.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity));
+    productsKitValue.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCostTemp = totalCostTemp + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).purchasePrice * singleProduct.elementsQuantity));
     sum = sum + totalCostTemp;
     setTotalCost(sum);
   };
