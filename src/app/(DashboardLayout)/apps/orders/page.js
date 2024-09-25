@@ -322,6 +322,7 @@ const CustomReactTable = () => {
                 onChange={(e) => handleChangeKit(e)}
               />
             </FormGroup>
+            <Label >Aggiungi prodotto</Label>
             {productElements && productElements.map((element, index) => (
             <FormGroup key={index}>
               <Label for="product">Prodotto</Label>
