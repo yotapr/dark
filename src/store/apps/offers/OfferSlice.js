@@ -256,7 +256,7 @@ export const AddOffersItem = (payload) => async (dispatch) => {
       headers: {
         'Content-Type': 'application/ld+json',
       }
-    })
+    })/*
     console.log(payload)
     console.log(value.data)
     //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
@@ -291,7 +291,7 @@ export const AddOffersItem = (payload) => async (dispatch) => {
         payload.testingTime,
         payload.testingCost,
         payload.testingTotalCost,
-        value.data['@id']));
+        value.data['@id']));*/
   } catch (err) {
     throw new Error(err);
   }

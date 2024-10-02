@@ -68,14 +68,18 @@ export const AppointmentSlice = createSlice({
         title,
         appointmentStart,
         appointmentEnd,
-        color
+        user,
+        color,
+        calendar
 		  ) => {
         return {
           payload: {
             title,
             appointmentStart,
             appointmentEnd,
-            color
+            user,
+            color,
+            calendar
 		      },
         };
       },
@@ -111,7 +115,7 @@ export const addNewAppointment = (payload) => async (dispatch) => {
         'Content-Type': 'application/ld+json',
       }
     });
-    dispatch(addAppointment(response.data.title, response.data.appointmentStart, response.data.appointmentEnd, response.data.color));
+    dispatch(addAppointment(response.data.title, response.data.appointmentStart, response.data.appointmentEnd, response.data.user, response.data.color, response.data.calendar));
   } catch (err) {
     throw new Error(err);
   }

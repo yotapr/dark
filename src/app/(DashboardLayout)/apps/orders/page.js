@@ -323,6 +323,7 @@ const CustomReactTable = () => {
               />
             </FormGroup>
             <Label >Aggiungi prodotto</Label>
+            <br/>
             {productElements && productElements.map((element, index) => (
             <FormGroup key={index}>
               <Label for="product">Prodotto</Label>

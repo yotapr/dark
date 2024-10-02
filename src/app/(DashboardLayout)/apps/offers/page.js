@@ -336,6 +336,7 @@ const CustomReactTable = () => {
       await dispatch(AddOffersItem(objToSend))
       //setJsonData(newObj);
     }
+    await dispatch(fetchOffers(1));
     setModal(!modal);
   };
 
@@ -393,7 +394,7 @@ const CustomReactTable = () => {
       mechanicalDesignTimeCost: prop.mechanicalDesignTimeCost,
       mechanicalDesignTime: prop.mechanicalDesignTime,
       electricalDesignTime: prop.electricalDesignTime,
-      electricalDesignTimeCost: prop.electricalDesignCost,
+      electricalDesignTimeCost: prop.electricalDesignTimeCost,
       electricalDesignCost: prop.electricalDesignCost,
       electricalWiringOnBoardTheMachine: prop.electricalWiringOnBoardTheMachine,
       //panelWiringCost: prop.panelWiringCost,
@@ -419,7 +420,6 @@ const CustomReactTable = () => {
             onClick={() => {
               const sobj = data2.find((o) => o.id === key);
               console.log(sobj)
-              console.log(sobj.materialTotalCost)
               setModal(!modal);
               setObj(sobj);
               setMechanicalDesignCost(sobj.mechanicalDesignCost);
@@ -449,7 +449,7 @@ const CustomReactTable = () => {
               if (sobj.productsKitValue) sobj.productsKitValue.map((singleProductsKitOption) => productsKits.find((singleProductsKits) => singleProductsKitOption.value === singleProductsKits['@id']).products.map((singleProduct) => totalCost = totalCost + products.find((singleProductFind) => singleProductFind['@id'] === singleProduct.selectProduct).sellPrice * singleProduct.elementsQuantity));
               setProductsKitPrice(totalCost);              
               let totalCostCustomProducts = 0;
-              if (sobj.customProducts) sobj.customProducts.map((singleCustomProduct) => totalCostCustomProducts = totalCostCustomProducts + singleCustomProduct.customPrice);
+              if (sobj.customProducts.length > 0) sobj.customProducts.map((singleCustomProduct) => totalCostCustomProducts = totalCostCustomProducts + singleCustomProduct.customPrice);
               setTotalCustomProduct(totalCostCustomProducts);
             }}
             color="primary"
@@ -620,7 +620,7 @@ const CustomReactTable = () => {
             <Label >Aggiungi prodotto personalizzato</Label>
             <br/>
             {console.log(customProducts)}
-            {customProducts && customProducts.map((element, index) => (
+            {customProducts.length > 0 && customProducts.map((element, index) => (
             <FormGroup key={index}>
               <Label for="customProduct">Prodotto personalizzato</Label>
               <Input

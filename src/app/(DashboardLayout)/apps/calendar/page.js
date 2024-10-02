@@ -126,9 +126,10 @@ const CalendarApp = () => {
       end: slot.end,
       user: user,
       color: color,
+      calendar: calendar
     });
     
-    dispatch(addNewAppointment({title: title, appointmentStart: appointmentStart, appointmentEnd: appointmentEnd, user: user, color: color}))
+    dispatch(addNewAppointment({title: title, appointmentStart: appointmentStart, appointmentEnd: appointmentEnd, user: user, color: color, calendar: calendar}))
     
     setOpen(false);
     e.target.reset();
@@ -291,7 +292,8 @@ const CalendarApp = () => {
             onChange={inputCalendarHandler}
           >
             <option value="">Scegli il calendario...</option>
-            {calendars.map((singleCalendar) => { if (singleCalendar['@id'] === calendar) return (<option key={singleCalendar['@id']} selected value={singleCalendar['@id']}>{singleCalendar.name}</option>); else return (<option key={singleCalendar['@id']} value={singleCalendar['@id']}>{singleCalendar.name}</option>)})}
+            {calendars.map((singleCalendar) => { if (singleCalendar['@id'] === calendar) return (<option key={singleCalendar['@id']} selected value={singleCalendar['@id']}>{singleCalendar.name}</option>);
+              else return (<option key={singleCalendar['@id']} value={singleCalendar['@id']}>{singleCalendar.name}</option>)})}
           </Input>
           <br />
           <Calendar
