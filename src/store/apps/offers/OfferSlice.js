@@ -299,9 +299,9 @@ export const AddOffersItem = (payload) => async (dispatch) => {
 
 export const fetchOffers = (page) => async (dispatch) => {
   try {
-    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/offers?page=' + page //+ '&approved=false'
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/offers?page=' + page + '&approved=false'
     );
-    console.log(response);
+    console.log(response.data['hydra:view']);
     dispatch(getOffers(response.data['hydra:member']));
     response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
   } catch (err) {
