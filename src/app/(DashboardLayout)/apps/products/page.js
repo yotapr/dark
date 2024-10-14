@@ -37,14 +37,16 @@ import {
   DeleteContact,
 } from "@/store/apps/providers/ProviderSlice";
 import {
-  SelectCategory,
   fetchCategories,
-  DeleteCategory,
+  AddCategoryItem,
+  UpdateCategoryItem,
+  DeleteCategoryItem
 } from "@/store/apps/category/CategorySlice";
 
 const CustomReactTable = () => {
   const [modal, setModal] = useState(false);
   const [modalKit, setModalKit] = useState(false);
+  const [modalCategory, setModalCategory] = useState(false);
   const [obj, setObj] = useState({});
   const [productElements, setProductElements] = useState([]);
 
@@ -54,6 +56,10 @@ const CustomReactTable = () => {
 
   const toggleKit = () => {
     setModalKit(!modalKit);
+  };
+
+  const toggleCategory = () => {
+    setModalCategory(!modalCategory);
   };
   
   const dispatch = useDispatch();
@@ -73,11 +79,15 @@ const CustomReactTable = () => {
 
   const categories = useSelector((state) => state.categoryReducer.categories);
 
+  const totalPageCategory = useSelector((state) => state.categoryReducer.totalPage);
+
   const totalPage = useSelector((state) => state.productsReducer.totalPage);
 
   const [modalDelete, setModalDelete] = useState(false);
 
   const [modalDeleteKit, setModalDeleteKit] = useState(false);
+
+  const [modalDeleteCategory, setModalDeleteCategory] = useState(false);
 
   const handleAddElementProduct = () => {
     setProductElements([...productElements, {
@@ -104,6 +114,16 @@ const CustomReactTable = () => {
     setProductElements(newElements);
   };
   
+  const handleSubmitCategory = (event) => {
+    event.preventDefault()
+    console.log(obj)
+    console.log(event.target.name.value)
+    console.log(event.target.remoteId.value)
+    if (event.target.remoteId.value) dispatch(UpdateCategoryItem({"name": event.target.name.value, "remoteId": event.target.remoteId.value}))
+      else dispatch(AddCategoryItem({"name": event.target.name.value}))
+    setModalCategory(!modalCategory);
+  }
+
   const handleSubmitKit = (event) => {
     event.preventDefault()
     if (event.target.remoteId !== undefined) dispatch(UpdateProductsKit({"name": event.target.name.value, "products": productElements, "remoteId": event.target.remoteId.value, "id": event.target.id.value}))
@@ -114,7 +134,8 @@ const CustomReactTable = () => {
   const handleSubmit = (event) => {
     event.preventDefault()
     console.log(event)
-    if (event.target.id.value !== undefined) {
+    if (event.target.category.value === "Scegli una categoria...") alert("Categoria mancante");
+    else if (event.target.id.value !== undefined) {
       const id = event.target.id.value;
       const productId = event.target.productId.value;
       const name = event.target.name.value;
@@ -127,8 +148,8 @@ const CustomReactTable = () => {
       const lastRestockQuantity = parseInt(event.target.lastRestockQuantity.value);
       const purchasePrice = parseInt(event.target.purchasePrice.value);
       const sellPrice = parseInt(event.target.sellPrice.value);
-      const weight = parseInt(event.target.weight.value);
-      const dimensions = parseInt(event.target.dimensions.value);
+      const weight = event.target.weight.value;
+      const dimensions = event.target.dimensions.value;
       const provider = event.target.provider.value;
       const note = event.target.note.value;
       const remoteId = event.target.remoteId.value;
@@ -146,8 +167,8 @@ const CustomReactTable = () => {
       const lastRestockQuantity = parseInt(event.target.lastRestockQuantity.value);
       const purchasePrice = parseInt(event.target.purchasePrice.value);
       const sellPrice = parseInt(event.target.sellPrice.value);
-      const weight = parseInt(event.target.weight.value);
-      const dimensions = parseInt(event.target.dimensions.value);
+      const weight = event.target.weight.value;
+      const dimensions = event.target.dimensions.value;
       const provider = event.target.provider.value;
       const note = event.target.note.value;
       //const newObj = JSON.parse(JSON.stringify(jsonData));
@@ -156,8 +177,49 @@ const CustomReactTable = () => {
       dispatch(AddProductsItem({productId, name, category, stockQuantity, lowLevel, availableQuantity, allocatedQuantity, restockDate, lastRestockQuantity, purchasePrice, sellPrice, weight, dimensions, provider, note}))
       //setJsonData(newObj);
     }
-    setModal(!modal);
+    if (event.target.category.value !== "Scegli una categoria...") setModal(!modal);
   };
+  const dataCategories = categories.map((prop, key) => {
+    return {
+      id: key,
+      name: prop.name,
+      remoteId: prop.remoteId ? prop.remoteId : prop['@id'],
+      actions: (
+        // we've added some custom button actions
+        <div className="text-center">
+          {/* use this button to add a edit kind of action */}
+          <Button
+            onClick={() => {
+              const sobj = dataCategories.find((o) => o.id === key);
+              setModalCategory(!modalCategory);
+              setObj(sobj);
+            }}
+            color="primary"
+            size="sm"
+            round="true"
+            icon="true"
+          >
+            MODIFICA
+          </Button>
+          <Button
+							onClick={() => {
+                const sobj = dataCategories.find((o) => o.id === key);
+                setModalDeleteCategory(!modalDeleteCategory);
+                setObj(sobj);
+							}}
+							className="ml-1"
+							color="danger"
+							size="sm"
+							round="true"
+							icon="true"
+            >
+							CANCELLA
+						</Button>
+          {/* use this button to remove the data row */}
+        </div>
+      ),
+    };
+  })
   const dataKits = productsKits.map((prop, key) => {
     let productString = ""
     productString = productString  + prop.products.map((singleProduct) => products.find(productToFind => singleProduct.selectProduct === productToFind['@id']) && products.find(productToFind => singleProduct.selectProduct === productToFind['@id']).name + " (" + singleProduct.elementsQuantity + ") ")
@@ -315,6 +377,20 @@ const CustomReactTable = () => {
           </Button>
         </ModalBody>
       </Modal>
+      <Modal isOpen={modalDeleteCategory} toggle={() => setModalDeleteCategory(!modalDeleteCategory)}>
+        <ModalHeader toggle={() => setModalDeleteCategory(!modalDeleteCategory)}>Confermi di voler cancellare?</ModalHeader>
+        <ModalBody>
+          <Button style={{margin: "5px"}} color="danger" onClick={() => {console.log(obj.remoteId); dispatch(DeleteCategoryItem(obj.remoteId,obj.id)); setModalDeleteCategory(!modalDeleteCategory)}}>       Rimuovi
+          </Button>
+          <Button
+            color="secondary"
+            className="ml-1"
+            onClick={() => setModalDeleteCategory(!modalDeleteCategory)}
+          >
+            Annulla
+          </Button>
+        </ModalBody>
+      </Modal>
       <Modal isOpen={modal} toggle={toggle.bind(null)}>
         <ModalHeader toggle={toggle.bind(null)}>Nuovo prodotto</ModalHeader>
         <ModalBody>
@@ -327,6 +403,7 @@ const CustomReactTable = () => {
                 type="text"
                 name="productId"
                 id="productId"
+                required
                 defaultValue={obj !== null ? obj.productId : ""}
               />
             </FormGroup>
@@ -337,6 +414,7 @@ const CustomReactTable = () => {
                 name="name"
                 id="name"
                 defaultValue={obj !== null ? obj.name : ""}
+                required
               />
             </FormGroup>
             <FormGroup>
@@ -345,6 +423,7 @@ const CustomReactTable = () => {
                 id="category"
                 name="category"
                 type="select"
+                required
               >
                 <option>Scegli una categoria...</option>
                 {categories.map((singleCategory => obj !== null && obj.categoryId !== undefined && singleCategory['@id'] === obj.categoryId ? <option key={singleCategory['@id']} value={singleCategory['@id']} selected>{singleCategory.name}</option> : <option key={singleCategory['@id']} value={singleCategory['@id']}>{singleCategory.name}</option>))}
@@ -556,6 +635,36 @@ const CustomReactTable = () => {
           </Form>
         </ModalBody>
       </Modal>
+      <Modal isOpen={modalCategory} toggle={toggleCategory.bind(null)}>
+        <ModalHeader toggle={toggleCategory.bind(null)}>Nuova categoria</ModalHeader>
+        <ModalBody>
+          <Form onSubmit={(event) => handleSubmitCategory(event)}>
+            {obj !== null && <Input type="hidden" name="id" id="id" defaultValue={obj.id} />}
+            {obj !== null && <Input type="hidden" name="remoteId" id="remoteId" defaultValue={obj.remoteId} />}
+            <FormGroup>
+              <Label for="name">Nome</Label>
+              <Input
+                type="text"
+                name="name"
+                id="name"
+                defaultValue={obj !== null ? obj.name : ""}
+              />
+            </FormGroup>
+            <FormGroup>
+              <Button color="primary" type="submit">
+                Salva
+              </Button>
+              <Button
+                color="secondary"
+                className="ml-1"
+                onClick={toggleCategory.bind(null)}
+              >
+                Cancella
+              </Button>
+            </FormGroup>
+          </Form>
+        </ModalBody>
+      </Modal>
       {/*--------------------------------------------------------------------------------*/}
       {/* Start Action table*/}
       {/*--------------------------------------------------------------------------------*/}
@@ -644,6 +753,43 @@ const CustomReactTable = () => {
           data={data2}
           onPageChange={async (pageIndex) => {
             await dispatch(fetchOrders(pageIndex + 1));
+          }}
+        />
+      </ComponentCard>
+      {/*--------------------------------------------------------------------------------*/}
+      {/* End Action table*/}
+      {/*--------------------------------------------------------------------------------*/}
+      {/*--------------------------------------------------------------------------------*/}
+      {/* Start Action table*/}
+      {/*--------------------------------------------------------------------------------*/}
+      <div className="p-3 border-bottom">
+        <Button color="danger" block onClick={() => { setObj(null); toggleCategory() }}>
+          Aggiungi categoria
+        </Button>
+      </div>
+      <ComponentCard title="Action Table">
+        <ReactTable
+          columns={[
+            {
+              Header: "Nome",
+              accessor: "name",
+            },
+            {
+              Header: "Actions",
+              accessor: "actions",
+              sortable: false,
+              filterable: false,
+            },
+          ]}
+          pages={totalPageCategory}
+          showPaginationBottom
+          showPageSizeOptions={false}
+          manual
+          showPageJump= {true}
+          className="-striped -highlight"
+          data={dataCategories}
+          onPageChange={async (pageIndex) => {
+            await dispatch(fetchCategories(pageIndex + 1));
           }}
         />
       </ComponentCard>

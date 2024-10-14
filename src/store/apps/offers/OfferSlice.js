@@ -299,7 +299,19 @@ export const AddOffersItem = (payload) => async (dispatch) => {
 
 export const fetchOffers = (page) => async (dispatch) => {
   try {
-    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/offers?page=' + page);
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/offers?page=' + page //+ '&approved=false'
+    );
+    console.log(response);
+    dispatch(getOffers(response.data['hydra:member']));
+    response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+export const fetchOffersApproved = (page) => async (dispatch) => {
+  try {
+    const response = await axios.get('https://awtapi.softwarehouseparma.net/api/offers?page=' + page + '&approved=true');
     dispatch(getOffers(response.data['hydra:member']));
     response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
   } catch (err) {
@@ -311,6 +323,22 @@ export const deleteOfferItem = (remoteId,index) => async (dispatch) => {
   try {
     const response = await axios.delete('https://awtapi.softwarehouseparma.net' + remoteId);
     dispatch(DeleteOffer(index));
+  } catch (err) {
+    throw new Error(err);
+  }
+};
+
+export const ApprovedOffer = (id, approved) => async (dispatch) => {
+  try {
+    const response = await axios.patch('https://awtapi.softwarehouseparma.net' + id, { 'approved': approved }, {
+      headers: {
+        'Content-Type': 'application/merge-patch+json',
+      }
+    })
+    .catch((error) => console.log(error))
+    console.log(response.data.approved);
+    //dispatch(DeliveredOrder(response.data.provider,response.data.orderDate,response.data.deliveryDate,response.data.realDeliveryDate,response.data.color,response.data.note,response.data.productElements,response.data.productsKitValue,response.data.totalProduct,payload.id,response.data.remoteId,response.data.delivered));
+    //response.data['hydra:view'] && dispatch(setPageData(response.data['hydra:view']))
   } catch (err) {
     throw new Error(err);
   }

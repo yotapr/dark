@@ -18,7 +18,7 @@ import ComponentCard from "@/app/(DashboardLayout)/components/ComponentCard";
 import { useDispatch, useSelector } from "@/store/hooks";
 import {
   SelectOffer,
-  fetchOffers,
+  fetchOffersApproved,
   DeleteOffer,
   isEdit,
   UpdateOffer,
@@ -97,7 +97,7 @@ const CustomReactTable = () => {
   useEffect(() => {
     dispatch(fetchProducts(1));
     dispatch(fetchProductsKits(1));
-    dispatch(fetchOffers(1));
+    dispatch(fetchOffersApproved(1));
     dispatch(fetchContacts(1));
     dispatch(fetchSalesAgents(1));
   }, [dispatch]);
@@ -337,7 +337,7 @@ const CustomReactTable = () => {
       await dispatch(AddOffersItem(objToSend))
       //setJsonData(newObj);
     }
-    await dispatch(fetchOffers(1));
+    await dispatch(fetchOffersApproved(1));
     setModal(!modal);
   };
 
@@ -920,7 +920,7 @@ const CustomReactTable = () => {
             setLoading(false)
           }}*/
           onPageChange={async (pageIndex) => {
-            await dispatch(fetchOffers(pageIndex + 1));
+            await dispatch(fetchOffersApproved(pageIndex + 1));
           }}
         />
       </ComponentCard>

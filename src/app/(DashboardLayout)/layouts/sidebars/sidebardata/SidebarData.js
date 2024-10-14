@@ -72,6 +72,13 @@ const SidebarData = [
     collapisble: false,
   },
   {
+    title: "Commesse",
+    href: "/apps/offersHistory",
+    icon: <Icon.DollarSign />,
+    id: 2.3,
+    collapisble: false,
+  },
+  {
     title: "Calendari",
     href: "/apps/calendar",
     icon: <Icon.Calendar />,

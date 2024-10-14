@@ -177,7 +177,7 @@ export const AddProductsItem = (payload) => async (dispatch) => {
       }
     })
     //const response = await axios.get('https://awtapi.softwarehouseparma.net/api/sales_agentss');
-    dispatch(addProduct(payload.productId,payload.name,payload.category,payload.stockQuantity,payload.lowLevel,payload.availableQuantity,payload.allocatedQuantity,payload.restockDate,payload.lastRestockQuantity,payload.purchasePrice,payload.sellPrice,payload.weight,payload.dimension,payload.provider,payload.note,value.data['@id']));
+    dispatch(addProduct(payload.productId,payload.name,payload.category,payload.stockQuantity,payload.lowLevel,payload.availableQuantity,payload.allocatedQuantity,payload.restockDate,payload.lastRestockQuantity,payload.purchasePrice,payload.sellPrice,payload.weight,payload.dimensions,payload.provider,payload.note,value.data['@id']));
   } catch (err) {
     throw new Error(err);
   }
